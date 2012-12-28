@@ -32,8 +32,8 @@
    Board LEDs driver for the Benito board, from www.dorkbotpdx.org.
 */
 
-#ifndef __LEDS_ARDUINOUNO_H__
-#define __LEDS_ARDUINOUNO_H__
+#ifndef __LEDS_FUJIN_H__
+#define __LEDS_FUJIN_H__
 
 	/* Includes: */
 		#include <avr/io.h>

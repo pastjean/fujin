@@ -34,7 +34,7 @@
  *  the project and is responsible for the initial application hardware configuration.
  */
 
-#include "Arduino-usbserial.h"
+#include "fujin-usbserial.h"
 
 /** Circular buffer to hold data from the host before it is sent to the device via the serial port. */
 RingBuff_t USBtoUSART_Buffer;

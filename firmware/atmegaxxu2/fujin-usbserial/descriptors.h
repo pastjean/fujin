@@ -43,8 +43,7 @@
 		#include <LUFA/Drivers/USB/Class/CDC.h>
 		
 	/* Product-specific definitions: */
-		#define ARDUINO_UNO_PID				0x0001
-		#define ARDUINO_MEGA2560_PID		0x0010
+		#define FUJIN_PID				0x0001
 
 	/* Macros: */
 		/** Endpoint number of the CDC device-to-host notification IN endpoint. */

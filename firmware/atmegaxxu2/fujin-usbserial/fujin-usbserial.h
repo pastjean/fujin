@@ -30,11 +30,11 @@
 
 /** \file
  *
- *  Header file for Arduino-usbserial.c.
+ *  Header file for Fujin-usbserial.c.
  */
 
-#ifndef _ARDUINO_USBSERIAL_H_
-#define _ARDUINO_USBSERIAL_H_
+#ifndef _FUJIN_USBSERIAL_H_
+#define _FUJIN_USBSERIAL_H_
 
 	/* Includes: */
 		#include <avr/io.h>
@@ -42,9 +42,9 @@
 		#include <avr/interrupt.h>
 		#include <avr/power.h>
 
-		#include "Descriptors.h"
+		#include "descriptors.h"
 
-		#include "Lib/LightweightRingBuff.h"
+		#include "lib/LightweightRingBuff.h"
 
 		#include <LUFA/Version.h>
 		#include <LUFA/Drivers/Board/LEDs.h>

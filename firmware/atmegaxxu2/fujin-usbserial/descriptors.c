@@ -35,7 +35,7 @@
  *  the device's capabilities and functions.  
  */
 
-#include "Descriptors.h"
+#include "descriptors.h"
 
 /* On some devices, there is a factory set internal serial number which can be automatically sent to the host as
  * the device's serial number when the Device Descriptor's .SerialNumStrIndex entry is set to USE_INTERNAL_SERIAL.
@@ -205,7 +205,7 @@ USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(24), .Type = DTYPE_String},
 		
-	.UnicodeString          = L"Arduino (www.arduino.cc)"
+	.UnicodeString          = L"Chinook (chinook.etsmtl.ca)"
 };
 
 /** Product descriptor string. This is a Unicode string containing the product's details in human readable form,
@@ -214,15 +214,9 @@ USB_Descriptor_String_t PROGMEM ManufacturerString =
  */
 USB_Descriptor_String_t PROGMEM ProductString =
 {
-	#if (ARDUINO_MODEL_PID == ARDUINO_UNO_PID)
 		.Header                 = {.Size = USB_STRING_LEN(11), .Type = DTYPE_String},
 			
-		.UnicodeString          = L"Arduino Uno"
-	#elif (ARDUINO_MODEL_PID == ARDUINO_MEGA2560_PID)
-		.Header                 = {.Size = USB_STRING_LEN(17), .Type = DTYPE_String},
-			
-		.UnicodeString          = L"Arduino Mega 2560"
-	#endif
+		.UnicodeString          = L"Fujin"
 	
 };
 

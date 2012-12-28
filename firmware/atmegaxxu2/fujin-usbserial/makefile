@@ -1,4 +1,3 @@
-# Hey Emacs, this is a -*- makefile -*-
 #----------------------------------------------------------------------------
 # WinAVR Makefile Template written by Eric B. Weddington, Jörg Wunsch, et al.
 #  >> Modified for use with the LUFA project. <<
@@ -32,6 +31,18 @@
 # make program = Download the hex file to the device, using avrdude.
 #                Please customize the avrdude settings below first!
 #
+# make dfu = Download the hex file to the device, using dfu-programmer (must
+#            have dfu-programmer installed).
+#
+# make flip = Download the hex file to the device, using Atmel FLIP (must
+#             have Atmel FLIP installed).
+#
+# make dfu-ee = Download the eeprom file to the device, using dfu-programmer
+#               (must have dfu-programmer installed).
+#
+# make flip-ee = Download the eeprom file to the device, using Atmel FLIP
+#                (must have Atmel FLIP installed).
+#
 # make doxygen = Generate DoxyGen documentation for the project (must have
 #                DoxyGen installed)
 #
@@ -46,18 +57,21 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
-
-# MCU name
+# MCU name(s)
+# 	Since the ATMEGA8U2 part is not directly supported by the current
+#	versions of either avrdude or dfu-programmer, we specify a dummy
+#	part; AT90USB82 which is close enough in memory size and organization
 MCU = atmega8u2
 MCU_AVRDUDE = at90usb82
+MCU_DFU = at90usb82
 
 # Specify the Arduino model using the assigned PID.  This is used by Descriptors.c
-#   to set the product descriptor string (for DFU we must use the PID for each
-#   chip that dfu-bootloader or Flip expect)
+#   to set PID and product descriptor string
 # Uno PID:
 ARDUINO_MODEL_PID = 0x0001
 # Mega 2560 PID:
 #ARDUINO_MODEL_PID = 0x0010
+
 
 # Target board (see library "Board Types" documentation, NONE for projects not requiring
 # LUFA board drivers). If USER is selected, put custom board drivers in a directory called 
@@ -93,20 +107,12 @@ F_CPU = 16000000
 F_CLOCK = $(F_CPU)
 
 
-# Starting byte address of the bootloader, as a byte address - computed via the formula
-#   BOOT_START = ((TOTAL_FLASH_BYTES - BOOTLOADER_SECTION_SIZE_BYTES) * 1024)
-#
-# Note that the bootloader size and start address given in AVRStudio is in words and not
-# bytes, and so will need to be doubled to obtain the byte address needed by AVR-GCC.
-BOOT_START =  0x1000
-
-
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = Arduino-usbdfu
+TARGET = Arduino-usbserial
 
 
 # Object files directory
@@ -119,18 +125,14 @@ OBJDIR = .
 LUFA_PATH = ../..
 
 
-# LUFA library compile-time options and predefined tokens
+# LUFA library compile-time options
 LUFA_OPTS  = -D USB_DEVICE_ONLY
-LUFA_OPTS += -D DEVICE_STATE_AS_GPIOR=0
-LUFA_OPTS += -D CONTROL_ONLY_DEVICE
-LUFA_OPTS += -D FIXED_CONTROL_ENDPOINT_SIZE=32
+LUFA_OPTS += -D FIXED_CONTROL_ENDPOINT_SIZE=8
 LUFA_OPTS += -D FIXED_NUM_CONFIGURATIONS=1
-LUFA_OPTS += -D USE_RAM_DESCRIPTORS
+LUFA_OPTS += -D USE_FLASH_DESCRIPTORS
+LUFA_OPTS += -D INTERRUPT_CONTROL_ENDPOINT
+LUFA_OPTS += -D DEVICE_STATE_AS_GPIOR=0
 LUFA_OPTS += -D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
-LUFA_OPTS += -D NO_INTERNAL_SERIAL
-LUFA_OPTS += -D NO_DEVICE_SELF_POWER
-LUFA_OPTS += -D NO_DEVICE_REMOTE_WAKEUP
-LUFA_OPTS += -D NO_STREAM_CALLBACKS
 
 
 # Create the LUFA source path variables by including the LUFA root makefile
@@ -141,6 +143,20 @@ include $(LUFA_PATH)/LUFA/makefile
 SRC = $(TARGET).c                                                 \
 	  Descriptors.c                                               \
 	  $(LUFA_SRC_USB)                                             \
+	  $(LUFA_SRC_USBCLASS)										  \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/Device.c			  \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/Endpoint.c           \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/HostStandardReq.c	  \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/Host.c               \
+ 	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/Pipe.c               \
+ 	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/USBController.c      \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/Events.c            \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/USBInterrupt.c       \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/USBTask.c           \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/DeviceStandardReq.c \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/ConfigDescriptor.c  \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/Class/Device/CDC.c            \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/Class/Host/CDC.c              
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -182,31 +198,31 @@ EXTRAINCDIRS = $(LUFA_PATH)/
 #     gnu89 = c89 plus GCC extensions
 #     c99   = ISO C99 standard (not yet fully implemented)
 #     gnu99 = c99 plus GCC extensions
-CSTANDARD = -std=c99
+CSTANDARD = -std=gnu99
 
 
 # Place -D or -U options here for C sources
-CDEFS  = -DF_CPU=$(F_CPU)UL
+CDEFS  = -DF_CPU=$(F_CPU)UL 
+CDEFS += -DF_CLOCK=$(F_CLOCK)UL 
 CDEFS += -DARDUINO_MODEL_PID=$(ARDUINO_MODEL_PID)
-CDEFS += -DF_CLOCK=$(F_CLOCK)UL
-CDEFS += -DBOARD=BOARD_$(BOARD)
-CDEFS += -DBOOT_START_ADDR=$(BOOT_START)UL
-CDEFS += -DTX_RX_LED_PULSE_MS=3
+CDEFS += -DBOARD=BOARD_$(BOARD) 
 CDEFS += $(LUFA_OPTS)
-
+CDEFS += -DAVR_RESET_LINE_PORT="PORTD"
+CDEFS += -DAVR_RESET_LINE_DDR="DDRD"
+CDEFS += -DAVR_RESET_LINE_MASK="(1 << 7)"
+CDEFS += -DTX_RX_LED_PULSE_MS=3
+CDEFS += -DPING_PONG_LED_PULSE_MS=100
 
 # Place -D or -U options here for ASM sources
 ADEFS  = -DF_CPU=$(F_CPU)
 ADEFS += -DF_CLOCK=$(F_CLOCK)UL
 ADEFS += -DBOARD=BOARD_$(BOARD)
-CDEFS += -DBOOT_START_ADDR=$(BOOT_START)UL
 ADEFS += $(LUFA_OPTS)
 
 # Place -D or -U options here for C++ sources
 CPPDEFS  = -DF_CPU=$(F_CPU)UL
 CPPDEFS += -DF_CLOCK=$(F_CLOCK)UL
 CPPDEFS += -DBOARD=BOARD_$(BOARD)
-CDEFS += -DBOOT_START_ADDR=$(BOOT_START)UL
 CPPDEFS += $(LUFA_OPTS)
 #CPPDEFS += -D__STDC_LIMIT_MACROS
 #CPPDEFS += -D__STDC_CONSTANT_MACROS
@@ -259,6 +275,7 @@ CPPFLAGS += -fshort-enums
 CPPFLAGS += -fno-exceptions
 CPPFLAGS += -Wall
 CPPFLAGS += -Wundef
+CFLAGS += -Wundef
 #CPPFLAGS += -mshort-calls
 #CPPFLAGS += -fno-unit-at-a-time
 #CPPFLAGS += -Wstrict-prototypes
@@ -336,7 +353,6 @@ EXTMEMOPTS =
 #    -Map:      create map file
 #    --cref:    add cross reference to  map file
 LDFLAGS  = -Wl,-Map=$(TARGET).map,--cref
-LDFLAGS += -Wl,--section-start=.text=$(BOOT_START)
 LDFLAGS += -Wl,--relax 
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += $(EXTMEMOPTS)
@@ -347,12 +363,6 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 
 #---------------- Programming Options (avrdude) ----------------
-
-# Fuse settings for Arduino Uno DFU bootloader project
-AVRDUDE_FUSES = -U efuse:w:0xF4:m -U hfuse:w:0xD9:m -U lfuse:w:0xFF:m 
-
-# Lock settings for Arduino Uno DFU bootloader project
-AVRDUDE_LOCK = -U lock:w:0x0F:m
 
 # Programming hardware
 # Type: avrdude -c ?
@@ -365,6 +375,7 @@ AVRDUDE_PORT = usb
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+
 
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
@@ -380,10 +391,13 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(MCU_AVRDUDE) -F -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FORCE = -F
+
+AVRDUDE_FLAGS = -p $(MCU_AVRDUDE) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
+AVRDUDE_FLAGS += $(AVRDUDE_FORCE)
 
 
 
@@ -433,7 +447,6 @@ REMOVEDIR = rm -rf
 COPY = cp
 WINSHELL = cmd
 
-
 # Define Messages
 # English
 MSG_ERRORS_NONE = Errors: none
@@ -479,10 +492,11 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter end
+#all: begin gccversion sizebefore build checkinvalidevents showliboptions showtarget sizeafter end
+all: begin gccversion sizebefore build showliboptions showtarget sizeafter end
 
 # Change the build target to build a HEX file or a library.
-build: elf hex eep lss sym
+build: elf hex eep lss sym asm
 #build: lib
 
 
@@ -491,6 +505,7 @@ hex: $(TARGET).hex
 eep: $(TARGET).eep
 lss: $(TARGET).lss
 sym: $(TARGET).sym
+asm: $(TARGET).s
 LIBNAME=lib$(TARGET).a
 lib: $(LIBNAME)
 
@@ -514,7 +529,6 @@ ELFSIZE = $(SIZE) $(MCU_FLAG) $(FORMAT_FLAG) $(TARGET).elf
 MCU_FLAG = $(shell $(SIZE) --help | grep -- --mcu > /dev/null && echo --mcu=$(MCU) )
 FORMAT_FLAG = $(shell $(SIZE) --help | grep -- --format=.*avr > /dev/null && echo --format=avr )
 
-
 sizebefore:
 	@if test -f $(TARGET).elf; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); \
 	2>/dev/null; echo; fi
@@ -523,7 +537,33 @@ sizeafter:
 	@if test -f $(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); \
 	2>/dev/null; echo; fi
 
+#$(LUFA_PATH)/LUFA/LUFA_Events.lst:
+#	@make -C $(LUFA_PATH)/LUFA/ LUFA_Events.lst
 
+#checkinvalidevents: $(LUFA_PATH)/LUFA/LUFA_Events.lst
+#	@echo
+#	@echo Checking for invalid events...
+#	@$(shell) avr-nm $(OBJ) | sed -n -e 's/^.*EVENT_/EVENT_/p' | \
+#	                 grep -F -v --file=$(LUFA_PATH)/LUFA/LUFA_Events.lst > InvalidEvents.tmp || true
+#	@sed -n -e 's/^/  WARNING - INVALID EVENT NAME: /p' InvalidEvents.tmp
+#	@if test -s InvalidEvents.tmp; then exit 1; fi
+	
+showliboptions:
+	@echo
+	@echo ---- Compile Time Library Options ----
+	@for i in $(LUFA_OPTS:-D%=%); do \
+		echo $$i; \
+	done
+	@echo --------------------------------------
+
+showtarget:
+	@echo
+	@echo --------- Target Information ---------
+	@echo AVR Model: $(MCU)
+	@echo Board:     $(BOARD)
+	@echo Clock:     $(F_CPU)Hz CPU, $(F_CLOCK)Hz Master
+	@echo --------------------------------------
+	
 
 # Display compiler version information.
 gccversion : 
@@ -532,7 +572,29 @@ gccversion :
 
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVRDUDE_FUSES) $(AVRDUDE_LOCK)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+
+flip: $(TARGET).hex
+	batchisp -hardware usb -device $(MCU_DFU) -operation erase f
+	batchisp -hardware usb -device $(MCU_DFU) -operation loadbuffer $(TARGET).hex program
+	batchisp -hardware usb -device $(MCU_DFU) -operation start reset 0
+
+dfu: $(TARGET).hex
+	dfu-programmer $(MCU_DFU) erase
+	dfu-programmer $(MCU_DFU) flash --debug 1 $(TARGET).hex
+	dfu-programmer $(MCU_DFU) reset
+
+
+flip-ee: $(TARGET).hex $(TARGET).eep
+	$(COPY) $(TARGET).eep $(TARGET)eep.hex
+	batchisp -hardware usb -device $(MCU_DFU) -operation memory EEPROM erase
+	batchisp -hardware usb -device $(MCU_DFU) -operation memory EEPROM loadbuffer $(TARGET)eep.hex program
+	batchisp -hardware usb -device $(MCU_DFU) -operation start reset 0
+	$(REMOVE) $(TARGET)eep.hex
+
+dfu-ee: $(TARGET).hex $(TARGET).eep
+	dfu-programmer $(MCU_DFU) flash-eeprom --debug 1 --suppress-bootloader-mem $(TARGET).eep
+	dfu-programmer $(MCU_DFU) reset
 
 
 # Generate avr-gdb config/init file which does the following:
@@ -666,13 +728,15 @@ $(OBJDIR)/%.o : %.S
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c
 	$(CC) -E -mmcu=$(MCU) -I. $(CFLAGS) $< -o $@ 
-
+	
 
 # Target: clean project.
-clean: begin clean_list end
+clean: begin clean_list clean_binary end
 
-clean_list :
-	@echo
+clean_binary:
+	$(REMOVE) $(TARGET).hex
+	
+clean_list:
 	@echo $(MSG_CLEANING)
 	$(REMOVE) $(TARGET).hex
 	$(REMOVE) $(TARGET).eep
@@ -707,4 +771,5 @@ $(shell mkdir $(OBJDIR) 2>/dev/null)
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
 build elf hex eep lss sym coff extcoff doxygen clean          \
-clean_list clean_doxygen program debug gdb-config
+clean_list clean_doxygen program dfu flip flip-ee dfu-ee      \
+debug gdb-config
