@@ -3,6 +3,8 @@ Fujin
 
 Fujin: calculation, dataloggin and battery monitoring system
 
+Fūjin (風神?) or Futen is also the Japanese god of the wind and one of the eldest Shinto gods. (source [wikipedia](https://en.wikipedia.org/wiki/F%C5%ABjin))
+
 Part of: [Chinook](http://chinook.etsmtl.ca) wind-powered vehicule. 
 
 ![3d Board](hardware/render/3d.jpg)
@@ -42,7 +44,9 @@ Pin mapping
 - CAN
   - RP99 (rx)
   - RP98 (rx)
-
+- Misc
+  - (sdcs)
+  - (eeprom)
 Peripheral mapping
 ------------------
 
