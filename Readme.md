@@ -5,7 +5,7 @@ Fujin: calculation, dataloggin and battery monitoring system
 
 Part of: [Chinook](http://chinook.etsmtl.ca) wind-powered vehicule. 
 
-![3d Board](https://raw.github.com/pastjean/fujin/master/hardware/3d.jpg)
+![3d Board](hardware/render/3d.jpg)
   
 Features
 --------
