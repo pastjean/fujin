@@ -1,21 +1,20 @@
 #ifndef __GLOBALDEF_H_
 #define __GLOBALDEF_H_
 
-typedef bool unsigned char;
-typedef uint8_t unsigned char;
-typedef int8_t char;
-typedef uint16_t unsigned int;
-typedef int16_t int;
-typedef uint32_t unsigned long;
-typedef int32_t long;
-typedef uint64_t unsigned long long;
-typedef int64_t long long;
+typedef unsigned char      bool;
+typedef unsigned char      uint8_t;
+typedef char               int8_t;
+typedef unsigned int       uint16_t;
+typedef int                int16_t;
+typedef unsigned long      uint32_t;
+typedef long               int32_t;
+typedef unsigned long long uint64_t;
+typedef long long          int64_t;
 
 
-#define TRUE		1
-#define FALSE		0
+#define TRUE    1
+#define FALSE   0
+#define ENABLE  1
+#define DISABLE 0
 
-#define ENABLE		1
-#define DISABLE		0
-
-#endif
+#endif // __GLOBALDEF_H_
