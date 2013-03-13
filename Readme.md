@@ -47,6 +47,7 @@ Pin mapping
 - Misc
   - (sdcs)
   - (eeprom)
+
 Peripheral mapping
 ------------------
 
