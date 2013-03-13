@@ -10,63 +10,63 @@ Part of: [Chinook](http://chinook.etsmtl.ca) wind-powered vehicule.
 Features
 --------
 
-* MCU : dsPIC33EP512MC806
-* USB-Serial : Atmega16u2-AU
-* Battery Monitoring : LM4151
-* Datalogging : USB key and SD Card
-* Communication :
-  * CANBUS : iso1050
-  * XBEE
-* RealTimeClock: DS1338
-* EEPROM : CAT24C256W
+- **MCU** : dsPIC33EP512MC806
+- **Battery Monitoring** : LM4151
+- **Datalogging** : SD Card
+- **Communication** :
+  - **CAN** : iso1050
+  - **XBee**
+  - **USB-Serial** : atmega16u2
+- **RealTimeClock**: DS1338
+- **EEPROM** : CAT24C256W
 
-* Leds :
-  * Uart RX
-  * Uart TX
-  * Can RX
-  * Can TX
-  * Low Bat
-  * XBEE RX
-  * XBEE TX
-  * ON
+- Power from batteries or USB
+- Spare i/o
 
+Pin mapping
+-----------
 
-* Power from batteries
+- UART (XBEE) 
+  - RP96 (tx)
+  - RP97 (rx)
+- UART (ATMEGA)
+  - RP101 (tx) 
+  - RP100 (rx)
+- I2C (I2C1) 
+  - SCL1 (R62) 
+  - SDA1 (R63)
+- SPI (SPI2)
+  - SCA2/RG6 (SCA)
+  - SDI2/RG7 (SDI)
+  - SDO2/RG8 (SDO)
+- CAN
+  - RP99 (rx)
+  - RP98 (rx)
 
+Peripheral mapping
+------------------
 
-Ideas
------
-* Power from USB???
-* Spare I/O
+- UART
+  - XBee
+- UART 
+  - Atmega
+- I2C1
+  - RTC (DS1338)
+  - EEPROM (CAT24C256W)
+  - Voltage Monitor (LM4151)
+- SPI2
+  - SDCARD
+- CAN (ISO1050)
+- LEDs
+  - RB11 (on)
+  - RB12 (lowbat)
+  - RB13 (canrx)
+  - RB14 (cantx)
+  - RB15 (relay)
 
-Board
------
-Lupien : 15A
-Khouya : 1.1A
-P-A    : 300mA
-Mic    : 400mA
+I2C ADDRESS
+-----------
 
-Comsuption
-----------
-
-VBAT
-* ltc4151: 1.2mA
-
-5V (environ 35mA + 237mA(360mA @3V3) = 300mA)
-* opamp  : 80uA
-* atmega : 20mA
-* ISO1050: 1.8mA + 5.2mA
-
-3V3 (environ 360mA au max)
-* xbee   : 200mA + 42mA (in,out)
-* pic    : 105mA
-* ds1338 : 110uA
-* cat24c : 1uA + 4mA (écriture lecture)
-
-
-I2C
----
-
-* EEPROM        : 1010000
-* RTC           : 1101111
-* Power Monitor : 1101000
+- EEPROM        : 1010000
+- RTC           : 1101111
+- Power Monitor : 1101000
