@@ -11,6 +11,7 @@
       <itemPath>hardware_profile.h</itemPath>
       <itemPath>p33EP512MC806.h</itemPath>
       <itemPath>fujin.h</itemPath>
+      <itemPath>fix_p33EP512MC806.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

@@ -10,7 +10,12 @@ typedef unsigned long      uint32_t;
 typedef long               int32_t;
 typedef unsigned long long uint64_t;
 typedef long long          int64_t;
+typedef uint8_t            uint8;
+typedef uint16_t           uint16;
 
+#ifndef NULL
+#define NULL    0;
+#endif
 
 #define TRUE    1
 #define FALSE   0

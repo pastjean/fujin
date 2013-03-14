@@ -2,6 +2,7 @@
 #define __HARDWARE_PROFILE_H
 
 #include "p33EP512MC806.h"
+#include "fix_p33EP512MC806.h"
 
 // # Global Definitions
 #define CPU_CLOCK 	20000000.0f
@@ -18,13 +19,22 @@
 // Pin mode: 
 // - 1=input
 // - 0=output
+#define OUTPUT 0
+#define INPUT 1
 
 // Leds
+#define LED_PORT PORTB
 #define LED_PWR    PORTBbits.RB11
 #define LED_LOWBAT PORTBbits.RB12
 #define LED_CANRX  PORTBbits.RB13
 #define LED_CANTX  PORTBbits.RB14
 #define LED_RELAY  PORTBbits.RB15
+#define LED_PWR_B    0x800
+#define LED_LOWBAT_B 0x1000
+#define LED_CANRX_B  0x2000
+#define LED_CANTX_B  0x4000
+#define LED_RELAY_B  0x8000
+
 // Config LEDS
 #define CONF_LED_PWR    TRISBbits.TRISB11
 #define CONF_LED_LOWBAT TRISBbits.TRISB12
@@ -62,8 +72,6 @@
 #define CONF_SDO TRISGbits.TRISG8
 
 // I2C
-#define SCL PORTGbits.RG2
-#define SDA PORTGbits.RG3
 // Config I2C
 #define CONF_SCL TRISGbits.TRISG2
 #define CONF_SDA TRISGbits.TRISG3
@@ -74,13 +82,6 @@
 // Config Miscellaneous
 #define CONF_EEPROM_WP TRISEbits.TRISE6
 #define CONF_SD_CARD_CS TRISEbits.TRISE5
-
-// Oscillators
-#define OSCIN PORTCbits.RC12
-#define OSCOUT PORTCbits.RC15
-// Config Oscillators
-#define CONF_OSCIN TRISCbits.TRISC12
-#define CONF_OSCOUT TRISCbits.TRISC15
 
 
 #endif // __HARDWARE_PROFILE_H

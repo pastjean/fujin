@@ -1,9 +1,29 @@
 // Thoses microchips guys forgot some things in their definition
 // of the p33EP512MC806.h
 
-#ifndef FIX_P33EP512MC806_H
-#define	FIX_P33EP512MC806_H
-
+#ifndef __FIX_P33EP512MC806_H
+#define	__FIX_P33EP512MC806_H
+/*
+        .extern RPINR20
+        .equiv  RPINR20L, _RPINR20
+        .equiv  RPINR20H, _RPINR20+1
+        
+;----- RPINR20 Bits -----------------------------------------------------
+        .equiv SDI1R0,  0x0000
+        .equiv SDI1R1,  0x0001
+        .equiv SDI1R2,  0x0002
+        .equiv SDI1R3,  0x0003
+        .equiv SDI1R4,  0x0004
+        .equiv SDI1R5,  0x0005
+        .equiv SDI1R6,  0x0006
+        .equiv SCK1R0,  0x0008
+        .equiv SCK1R1,  0x0009
+        .equiv SCK1R2,  0x000A
+        .equiv SCK1R3,  0x000B
+        .equiv SCK1R4,  0x000C
+        .equiv SCK1R5,  0x000D
+        .equiv SCK1R6,  0x000E
+*/
 extern volatile unsigned int  RPINR22 __attribute__((__sfr__));
 __extension__ typedef struct tagRPIsNR22BITS {
   union {
@@ -30,8 +50,8 @@ __extension__ typedef struct tagRPIsNR22BITS {
       unsigned SCK2R6:1;
     };
   };
-} RPINR20BITS;
-extern volatile RPINR20BITS RPINR22bits __attribute__((__sfr__));
+} RPINR22BITS;
+extern volatile RPINR22BITS RPINR22bits __attribute__((__sfr__));
 
 /* RPINR20 */
 #define _SDI2R RPINR22bits.SDI2R
