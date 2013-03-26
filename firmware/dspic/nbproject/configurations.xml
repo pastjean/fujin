@@ -4,14 +4,18 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="devices" displayName="devices" projectFiles="true">
+        <itemPath>devices/ds1338.h</itemPath>
+        <itemPath>devices/ltc4151.h</itemPath>
+        <itemPath>devices/cat24c256w.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="peripherals" displayName="peripherals" projectFiles="true">
-        <itemPath>peripherals/leds.h</itemPath>
+        <itemPath>peripherals/i2c.h</itemPath>
       </logicalFolder>
       <itemPath>globaldef.h</itemPath>
       <itemPath>hardware_profile.h</itemPath>
       <itemPath>p33EP512MC806.h</itemPath>
       <itemPath>fujin.h</itemPath>
-      <itemPath>fix_p33EP512MC806.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -20,6 +24,14 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="devices" displayName="devices" projectFiles="true">
+        <itemPath>devices/cat24c256w.c</itemPath>
+        <itemPath>devices/ds1338.c</itemPath>
+        <itemPath>devices/ltc4151.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="peripherals" displayName="peripherals" projectFiles="true">
+        <itemPath>peripherals/i2c.c</itemPath>
+      </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>fujin.c</itemPath>
     </logicalFolder>
@@ -31,6 +43,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>peripherals</Elem>
+    <Elem>devices</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -243,7 +256,7 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x557ff"/>
         <property key="memories.programmemory.start" value="0x0"/>
-        <property key="poweroptions.powerenable" value="false"/>
+        <property key="poweroptions.powerenable" value="true"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>

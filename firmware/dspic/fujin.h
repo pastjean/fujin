@@ -1,8 +1,12 @@
 #ifndef __FUJIN_H
 #define	__FUJIN_H
 
+#include "p33EP512MC806.h"
 #include "hardware_profile.h"
 #include "globaldef.h"
+#include "peripherals/i2c.h"
+
+#include "devices/ltc4151.h"
 
 #define FUJIN_OK                0
 #define FUJIN_ERR               -1
@@ -15,6 +19,6 @@
 void set_clk();
 void fujin_init_io();
 void fujin_init_uart();
-
+void fujin_init_i2c();
 #endif	// __FUJIN_H
 

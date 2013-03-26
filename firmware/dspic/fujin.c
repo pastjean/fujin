@@ -42,7 +42,7 @@ void fujin_init_io(){
     CONF_SD_CARD_CS = OUTPUT;
 
     // SPI Pins
-    // TODO : doesnt work
+    // SPI2 is an autonome guy he configures himself alone
     CONF_SDO = OUTPUT;
     CONF_SCK = OUTPUT;
     CONF_SDI = INPUT;
@@ -56,4 +56,27 @@ void fujin_init_io(){
 
     // OSC Pins
     // OSC Pins too are big boys!
+}
+
+
+
+void fujin_init_uart(){
+    U1MODEbits.STSEL = 0; // one stop bit
+    U1MODEbits.PDSEL = 0; // no parity - 8 data bit
+    U1MODEbits.ABAUD = 0; // auto baud disabled
+    U1MODEbits.BRGH = 0; // low speed mode
+    U1BRG = ((FOSC/2)/(16*UART1_SPEED)) - 1 ; // baud rate setting
+    // interrupt after transmission of one tx char
+    U1STAbits.UTXISEL0 = 0;
+    U1STAbits.UTXISEL1 = 0;
+    // enable uart interrupt
+    IEC0bits.U1TXIE = 1;
+    // Enable uart
+    U1MODEbits.UARTEN = 1;
+    // Enable uart tx
+    U1STAbits.UTXEN = 1;
+}
+
+void fujin_init_i2c(){
+    	I2C_Init(I2C_1,100000.0f);
 }

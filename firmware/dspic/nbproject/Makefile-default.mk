@@ -45,11 +45,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/fujin.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/peripherals/i2c.o ${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/devices/cat24c256w.o ${OBJECTDIR}/devices/ds1338.o ${OBJECTDIR}/devices/ltc4151.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/peripherals/i2c.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/fujin.o.d ${OBJECTDIR}/devices/cat24c256w.o.d ${OBJECTDIR}/devices/ds1338.o.d ${OBJECTDIR}/devices/ltc4151.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o
+OBJECTFILES=${OBJECTDIR}/peripherals/i2c.o ${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/devices/cat24c256w.o ${OBJECTDIR}/devices/ds1338.o ${OBJECTDIR}/devices/ltc4151.o
 
 
 CFLAGS=
@@ -73,6 +73,12 @@ MP_LINKER_FILE_OPTION=,--script=p33EP512MC806.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/peripherals/i2c.o: peripherals/i2c.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/peripherals 
+	@${RM} ${OBJECTDIR}/peripherals/i2c.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  peripherals/i2c.c  -o ${OBJECTDIR}/peripherals/i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/peripherals/i2c.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/peripherals/i2c.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/main.o.d 
@@ -85,7 +91,31 @@ ${OBJECTDIR}/fujin.o: fujin.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE)  fujin.c  -o ${OBJECTDIR}/fujin.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/fujin.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
 	@${FIXDEPS} "${OBJECTDIR}/fujin.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/devices/cat24c256w.o: devices/cat24c256w.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/devices 
+	@${RM} ${OBJECTDIR}/devices/cat24c256w.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  devices/cat24c256w.c  -o ${OBJECTDIR}/devices/cat24c256w.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/devices/cat24c256w.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/devices/cat24c256w.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/devices/ds1338.o: devices/ds1338.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/devices 
+	@${RM} ${OBJECTDIR}/devices/ds1338.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  devices/ds1338.c  -o ${OBJECTDIR}/devices/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/devices/ds1338.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/devices/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/devices/ltc4151.o: devices/ltc4151.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/devices 
+	@${RM} ${OBJECTDIR}/devices/ltc4151.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  devices/ltc4151.c  -o ${OBJECTDIR}/devices/ltc4151.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/devices/ltc4151.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/devices/ltc4151.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 else
+${OBJECTDIR}/peripherals/i2c.o: peripherals/i2c.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/peripherals 
+	@${RM} ${OBJECTDIR}/peripherals/i2c.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  peripherals/i2c.c  -o ${OBJECTDIR}/peripherals/i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/peripherals/i2c.o.d"        -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/peripherals/i2c.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/main.o.d 
@@ -97,6 +127,24 @@ ${OBJECTDIR}/fujin.o: fujin.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/fujin.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  fujin.c  -o ${OBJECTDIR}/fujin.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/fujin.o.d"        -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
 	@${FIXDEPS} "${OBJECTDIR}/fujin.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/devices/cat24c256w.o: devices/cat24c256w.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/devices 
+	@${RM} ${OBJECTDIR}/devices/cat24c256w.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  devices/cat24c256w.c  -o ${OBJECTDIR}/devices/cat24c256w.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/devices/cat24c256w.o.d"        -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/devices/cat24c256w.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/devices/ds1338.o: devices/ds1338.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/devices 
+	@${RM} ${OBJECTDIR}/devices/ds1338.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  devices/ds1338.c  -o ${OBJECTDIR}/devices/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/devices/ds1338.o.d"        -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/devices/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/devices/ltc4151.o: devices/ltc4151.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/devices 
+	@${RM} ${OBJECTDIR}/devices/ltc4151.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  devices/ltc4151.c  -o ${OBJECTDIR}/devices/ltc4151.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/devices/ltc4151.o.d"        -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/devices/ltc4151.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 

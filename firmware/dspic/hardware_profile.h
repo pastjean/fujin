@@ -2,7 +2,6 @@
 #define __HARDWARE_PROFILE_H
 
 #include "p33EP512MC806.h"
-#include "fix_p33EP512MC806.h"
 
 // # Global Definitions
 #define CPU_CLOCK 	20000000.0f
@@ -29,11 +28,7 @@
 #define LED_CANRX  PORTBbits.RB13
 #define LED_CANTX  PORTBbits.RB14
 #define LED_RELAY  PORTBbits.RB15
-#define LED_PWR_B    0x800
-#define LED_LOWBAT_B 0x1000
-#define LED_CANRX_B  0x2000
-#define LED_CANTX_B  0x4000
-#define LED_RELAY_B  0x8000
+#define SWITCH_RELAY  PORTBbits.RB15
 
 // Config LEDS
 #define CONF_LED_PWR    TRISBbits.TRISB11

@@ -21,5 +21,7 @@ typedef uint16_t           uint16;
 #define FALSE   0
 #define ENABLE  1
 #define DISABLE 0
+#define ON      1
+#define OFF     0
 
 #endif // __GLOBALDEF_H_
