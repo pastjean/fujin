@@ -8,22 +8,26 @@ void set_clk()
     while(OSCCONbits.LOCK !=1);
 }
 
+void fujin_init_leds(){
+    TRISB = 0;
+//    CONF_LED_PWR = OUTPUT;
+//    CONF_LED_LOWBAT = OUTPUT;
+//    CONF_LED_CANRX = OUTPUT;
+//    CONF_LED_CANTX= OUTPUT;
+//    CONF_LED_RELAY= OUTPUT;
+}
+
 void fujin_init_io(){
 
     // LEDS
-    CONF_LED_PWR = OUTPUT;
-    CONF_LED_LOWBAT = OUTPUT;
-    CONF_LED_CANRX = OUTPUT;
-    CONF_LED_CANTX= OUTPUT;
-    CONF_LED_RELAY= OUTPUT;
-
+    fujin_init_leds();
 
     // UART 1 Pins // XBEE
     // _RP69R = 1; // RD5
     CONF_U1TX = OUTPUT;
     CONF_U1RX = INPUT;
-    _RP96R = 0b000001;  // TX
-    _U1RXR = 97; // RX
+    _RP97R = 0b000001;  // TX
+    _U1RXR = 96; // RX
 
     // UART 2 Pins // USB-Serial
     CONF_U2TX = OUTPUT;
@@ -61,20 +65,6 @@ void fujin_init_io(){
 
 
 void fujin_init_uart(){
-    U1MODEbits.STSEL = 0; // one stop bit
-    U1MODEbits.PDSEL = 0; // no parity - 8 data bit
-    U1MODEbits.ABAUD = 0; // auto baud disabled
-    U1MODEbits.BRGH = 0; // low speed mode
-    U1BRG = ((FOSC/2)/(16*UART1_SPEED)) - 1 ; // baud rate setting
-    // interrupt after transmission of one tx char
-    U1STAbits.UTXISEL0 = 0;
-    U1STAbits.UTXISEL1 = 0;
-    // enable uart interrupt
-    IEC0bits.U1TXIE = 1;
-    // Enable uart
-    U1MODEbits.UARTEN = 1;
-    // Enable uart tx
-    U1STAbits.UTXEN = 1;
 }
 
 void fujin_init_i2c(){

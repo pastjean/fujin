@@ -4,18 +4,22 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="devices" displayName="devices" projectFiles="true">
-        <itemPath>devices/ds1338.h</itemPath>
-        <itemPath>devices/ltc4151.h</itemPath>
-        <itemPath>devices/cat24c256w.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="peripherals" displayName="peripherals" projectFiles="true">
-        <itemPath>peripherals/i2c.h</itemPath>
+      <logicalFolder name="chinookpack" displayName="chinookpack" projectFiles="true">
+        <itemPath>chinookpack/fbuffer.h</itemPath>
+        <itemPath>chinookpack/object.h</itemPath>
+        <itemPath>chinookpack/pack.h</itemPath>
+        <itemPath>chinookpack/unpack.h</itemPath>
       </logicalFolder>
       <itemPath>globaldef.h</itemPath>
       <itemPath>hardware_profile.h</itemPath>
-      <itemPath>p33EP512MC806.h</itemPath>
       <itemPath>fujin.h</itemPath>
+      <itemPath>i2c.h</itemPath>
+      <itemPath>uart.h</itemPath>
+      <itemPath>cat24c256w.h</itemPath>
+      <itemPath>ds1338.h</itemPath>
+      <itemPath>ltc4151.h</itemPath>
+      <itemPath>M_TMR.h</itemPath>
+      <itemPath>chinookpack.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -24,16 +28,15 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="devices" displayName="devices" projectFiles="true">
-        <itemPath>devices/cat24c256w.c</itemPath>
-        <itemPath>devices/ds1338.c</itemPath>
-        <itemPath>devices/ltc4151.c</itemPath>
-      </logicalFolder>
-      <logicalFolder name="peripherals" displayName="peripherals" projectFiles="true">
-        <itemPath>peripherals/i2c.c</itemPath>
-      </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>fujin.c</itemPath>
+      <itemPath>i2c.c</itemPath>
+      <itemPath>uart.c</itemPath>
+      <itemPath>cat24c256w.c</itemPath>
+      <itemPath>ds1338.c</itemPath>
+      <itemPath>ltc4151.c</itemPath>
+      <itemPath>M_TMR.c</itemPath>
+      <itemPath>chinookpack_unpack.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -44,6 +47,7 @@
   <sourceRootList>
     <Elem>peripherals</Elem>
     <Elem>devices</Elem>
+    <Elem>chinookpack</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -54,8 +58,8 @@
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
         <platformTool>ICD3PlatformTool</platformTool>
-        <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.11</languageToolchainVersion>
+        <languageToolchain>C30</languageToolchain>
+        <languageToolchainVersion></languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <compileType>
@@ -91,29 +95,14 @@
         <property key="enable-short-double" value="false"/>
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories"
+                  value="/Users/pastjean/Documents/projets/fujin/firmware/dspic"/>
         <property key="isolate-each-function" value="false"/>
-        <property key="keep-inline" value="false"/>
-        <property key="oXC16gcc-align-arr" value="false"/>
-        <property key="oXC16gcc-cnsts-mauxflash" value="false"/>
-        <property key="oXC16gcc-data-sects" value="false"/>
-        <property key="oXC16gcc-errata" value=""/>
-        <property key="oXC16gcc-fillupper" value=""/>
-        <property key="oXC16gcc-large-aggregate" value="false"/>
-        <property key="oXC16gcc-mauxflash" value="false"/>
-        <property key="oXC16gcc-mpa-lvl" value=""/>
-        <property key="oXC16gcc-name-text-sec" value=""/>
-        <property key="oXC16gcc-near-chars" value="false"/>
-        <property key="oXC16gcc-no-isr-warn" value="false"/>
-        <property key="oXC16gcc-sfr-warn" value="false"/>
-        <property key="oXC16gcc-smar-io-lvl" value="1"/>
-        <property key="oXC16gcc-smart-io-fmt" value=""/>
         <property key="optimization-level" value="0"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
         <property key="preprocessor-macros" value=""/>
         <property key="scalar-model" value="default"/>
-        <property key="use-cci" value="false"/>
         <appendMe value="--std=c99"/>
       </C30>
       <C30-AS>
@@ -127,7 +116,6 @@
         <property key="list-section-info" value="false"/>
         <property key="list-source" value="false"/>
         <property key="list-symbols" value="false"/>
-        <property key="oXC16asm-extra-opts" value=""/>
         <property key="oXC16asm-list-to-file" value="false"/>
         <property key="omit-debug-dirs" value="false"/>
         <property key="omit-forms" value="false"/>
@@ -136,7 +124,6 @@
         <property key="warning-level" value="emit-warnings"/>
       </C30-AS>
       <C30-LD>
-        <property key="additional-options-use-response-files" value="false"/>
         <property key="boot-eeprom" value="no_eeprom"/>
         <property key="boot-flash" value="no_flash"/>
         <property key="boot-ram" value="no_ram"/>
@@ -154,12 +141,6 @@
         <property key="input-libraries" value=""/>
         <property key="linker-symbols" value=""/>
         <property key="map-file" value=""/>
-        <property key="oXC16ld-extra-opts" value=""/>
-        <property key="oXC16ld-fill-upper" value="0"/>
-        <property key="oXC16ld-force-link" value="false"/>
-        <property key="oXC16ld-no-smart-io" value="false"/>
-        <property key="oXC16ld-nostdlib" value="false"/>
-        <property key="oXC16ld-stackguard" value="16"/>
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="false"/>
         <property key="report-memory-usage" value="true"/>
@@ -245,7 +226,7 @@
         <property key="UART 2" value="true"/>
         <property key="UART 3" value="true"/>
         <property key="UART 4" value="true"/>
-        <property key="debugoptions.useswbreakpoints" value="true"/>
+        <property key="debugoptions.useswbreakpoints" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="false"/>
@@ -256,7 +237,7 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x557ff"/>
         <property key="memories.programmemory.start" value="0x0"/>
-        <property key="poweroptions.powerenable" value="true"/>
+        <property key="poweroptions.powerenable" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>

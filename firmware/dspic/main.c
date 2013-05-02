@@ -1,52 +1,73 @@
-#include <stdio.h>
-#include <stdlib.h>
+//#include "fujin.h"
+#include <p33EP512MC806.h>
+#include "globaldef.h"
+#include "hardware_profile.h"
 #include "fujin.h"
-
+#include "uart.h"
+#include <string.h>
 // Device Configurations registers
 _FOSCSEL(FNOSC_FRCPLL); // select fast internal rc with pll
 _FOSC(FCKSM_CSECMD & OSCIOFNC_OFF & POSCMD_XT);
 _FWDT(FWDTEN_OFF); // Watchdog timer software enabled
 
-uint8_t j=0;
-void __attribute__((__interrupt__,no_auto_psv)) _U1TXInterrupt(void)
-{
-    if(!(++j%100)){
-        LED_CANRX=ON;
-    }
-    if(!(++j%200)){
-        LED_CANRX=OFF;
-    }
+uint8_t print=0;
 
-    IFS0bits.U1TXIF = 0; // Clear TX
-
-    U1TXREG = 'a'; // Transmit
-}
+sUartParam ubParam={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
+uint8_t buf[80];
 
 int main(int argc, char** argv) {
-// Set clk
+    // INIT LED FIRST
+    // SET ALL LED ON
+    fujin_init_leds();
+    PORTB =0x7800;
+
     set_clk();
     fujin_init_io();
-    fujin_init_uart();
     fujin_init_i2c();
-    
-    // Power on
-   // led_turn_on(LED_PWR_B)
-   LED_PWR   = ON;
-   LED_RELAY = OFF;
-   // led_execute();
-    
-    U1TXREG = 'a';
 
-    ltc4151_init();
-
+    	UartInit(UART_1,&ubParam);
+	UartTxEnable(UART_1, ENABLE);
+	UartInitPortStruc(UART_1, NULL,NULL);
+	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
+	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
+	UartTxFrame(UART_1, "Notus Started \n", 15);
+    //LED_PWR    =OFF;Nop();
+    //LED_CANRX  =OFF;Nop();
+    //LED_CANTX  =ON;Nop();
+    //LED_LOWBAT =;Nop();
+    //ltc4151_init();
+    Nop();
+    Init_Timer5(50.0);
     // 0xDE
+    int i=0;
     while(1){
+
+    //U1TXREG = 'a';
+        char str[10] = "";
+        if(print==1){
+            print = 0;
+            sprintf(str,"Hello %d\n",i);
+            UartTxFrame(UART_1, str, strlen(str));
+            i++;
+            if(i>= 100){i=0;}
+    LATBbits.LATB14^=1;
+
+
+
+        }
         // process queued led events
        // led_execute();
-        ltc4151_read_current();
+        //ltc4151_read_current();
     }
 
     // Should never go there
-    return (EXIT_SUCCESS);
+    return 0;
 }
 
+void __attribute__((interrupt, auto_psv)) _T5Interrupt(void)
+{
+    /*Timer used for display at 10 Hz*/
+    if(print==0) print = 1;
+
+    _T5IF=0;
+}

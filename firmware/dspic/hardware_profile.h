@@ -1,12 +1,11 @@
 #ifndef __HARDWARE_PROFILE_H
 #define __HARDWARE_PROFILE_H
 
-#include "p33EP512MC806.h"
-
+#include <p33EP512MC806.h>
 // # Global Definitions
-#define CPU_CLOCK 	20000000.0f
-#define FOSC_MHZ	20
-#define FOSC		20000000			//External Xtal (HS)
+#define CPU_CLOCK 	100000000.0f
+#define FOSC		100000000.0f			//External Xtal (HS)
+#define FOSC_MHZ	(FOSC/1000000.0f)
 #define UART1_SPEED	9600.0f				//UART baud rate
 #define UART2_SPEED	9600.0f				//UART baud rate
 #define I2C_SPEED	100000.0f			//I2C Clock Speed -> 389KHz
@@ -22,7 +21,7 @@
 #define INPUT 1
 
 // Leds
-#define LED_PORT PORTB
+#define LED_PORT   PORTB
 #define LED_PWR    PORTBbits.RB11
 #define LED_LOWBAT PORTBbits.RB12
 #define LED_CANRX  PORTBbits.RB13
@@ -40,15 +39,16 @@
 // UART
 // UART1 is USB-Serial
 // UART2 is XBee
-#define U1RX PORTFbits.RF4
-#define U1TX PORTFbits.RF5
-#define U2RX PORTFbits.RF1
-#define U2TX PORTFbits.RF0
+#define U2RX PORTFbits.RF4
+#define U2TX PORTFbits.RF5
+#define U1TX PORTFbits.RF1
+#define U1RX PORTFbits.RF0
+
 // Config UART
-#define CONF_U1RX TRISFbits.TRISF4
-#define CONF_U1TX TRISFbits.TRISF5
-#define CONF_U2RX TRISFbits.TRISF1
-#define CONF_U2TX TRISFbits.TRISF0
+#define CONF_U2RX TRISFbits.TRISF4
+#define CONF_U2TX TRISFbits.TRISF5
+#define CONF_U1TX TRISFbits.TRISF1
+#define CONF_U1RX TRISFbits.TRISF0
 
 // CAN
 #define CANRX PORTFbits.RF2
