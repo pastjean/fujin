@@ -4,6 +4,7 @@
 #include "hardware_profile.h"
 #include "fujin.h"
 #include "uart.h"
+#include <stdio.h>
 #include <string.h>
 // Device Configurations registers
 _FOSCSEL(FNOSC_FRCPLL); // select fast internal rc with pll
@@ -31,13 +32,26 @@ int main(int argc, char** argv) {
 	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
 	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
 	UartTxFrame(UART_1, "Notus Started \n", 15);
+        UartInit(UART_2,&ubParam);
+	UartTxEnable(UART_2, ENABLE);
+	UartInitPortStruc(UART_2, NULL,NULL);
+	UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
+	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
+	UartTxFrame(UART_2, "Notus Started \n", 15);
+
+        //UartInit(UART_2,&ubParam);
+	//UartTxEnable(UART_2, ENABLE);
+	//UartInitPortStruc(UART_2, NULL,NULL);
+	//UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
+	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
+	//UartTxFrame(UART_2, "Notus Started \n", 15);
+
     //LED_PWR    =OFF;Nop();
     //LED_CANRX  =OFF;Nop();
     //LED_CANTX  =ON;Nop();
     //LED_LOWBAT =;Nop();
     //ltc4151_init();
-    Nop();
-    Init_Timer5(50.0);
+    Init_Timer5(10.0);
     // 0xDE
     int i=0;
     while(1){
@@ -46,14 +60,12 @@ int main(int argc, char** argv) {
         char str[10] = "";
         if(print==1){
             print = 0;
-            sprintf(str,"Hello %d\n",i);
-            UartTxFrame(UART_1, str, strlen(str));
-            i++;
-            if(i>= 100){i=0;}
-    LATBbits.LATB14^=1;
-
-
-
+            sprintf(str,"Hello %d\n\r",i);
+            //UartTxFrame(UART_1, str, strlen(str));
+            UartTxFrame(UART_2, str, strlen(str));
+            
+            if(++i>= 100){i=0;}
+              LATBbits.LATB14^=1;
         }
         // process queued led events
        // led_execute();

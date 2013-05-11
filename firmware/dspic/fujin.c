@@ -34,6 +34,8 @@ void fujin_init_io(){
     CONF_U2RX = INPUT;
     _RP101R = 0b000011; //TX
     _U2RXR = 100;//RX
+//    _RP101R = 0b000001; //TX
+//    _U1RXR = 100; // RX
 
     // CAN 1 Pins
     CONF_CANTX = OUTPUT;
