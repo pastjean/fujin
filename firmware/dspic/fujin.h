@@ -18,7 +18,6 @@
     printf("DEBUG %s:%d > " fmt "\n", __FILE__, __LINE__, __VA_ARGS__)
 
 void set_clk();
-void fujin_init_leds();
 void fujin_init_io();
 void fujin_init_uart();
 void fujin_init_i2c();

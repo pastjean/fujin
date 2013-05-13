@@ -12,11 +12,12 @@
 #define LTC4151_VIN_LSB 0x03
 #define LTC4151_CONTROL 0x06
 
-void ltc4151_init(){
-    I2C_Send(LTC4151_WRITE,LTC4151_CONTROL,0b0000100,I2C_1);
+void ltc4151_init(ltc4151_s* ltc4151,int i2c_port){
+    ltc4151->port = i2c_port;
+    I2C_Send(LTC4151_WRITE,LTC4151_CONTROL,0b0000100,i2c_port);
 }
 
-float ltc4151_read_voltage()
+float ltc4151_read_voltage(ltc4151_s* ltc4151)
 {
 	char error = 0;
 	float voltage = 0.0f;
@@ -28,7 +29,7 @@ float ltc4151_read_voltage()
                             LTC4151_READ,
                             LTC4151_VIN_LSB,
                             &data_LSB,
-                            I2C_1);
+                            ltc4151->port);
 
 	if (error == -1){return -1;}
 
@@ -36,7 +37,7 @@ float ltc4151_read_voltage()
                             LTC4151_READ,
                             LTC4151_VIN_MSB,
                             &data_MSB,
-                            I2C_1);
+                            ltc4151->port);
 	if (error == -1){return -1;}
 
 	/*Scale of the sensor is 25mV/bit*/
@@ -47,7 +48,7 @@ float ltc4151_read_voltage()
 	return voltage;
 }
 
-float ltc4151_read_current()
+float ltc4151_read_current(ltc4151_s* ltc4151)
 {
 	char error = 0;
 	float current = 0.0f;
@@ -56,13 +57,13 @@ float ltc4151_read_current()
 	unsigned char data_MSB = 0;
 
 	/*Receive the High side and Low side (sense value)*/
-	error = I2C_Receive(LTC4151_WRITE,LTC4151_READ,LTC4151_SENSE_LSB,&data_LSB,I2C_1);
+	error = I2C_Receive(LTC4151_WRITE,LTC4151_READ,LTC4151_SENSE_LSB,&data_LSB,ltc4151->port);
 	if (error == -1)
 		{
 			return (float)error;
 		}
 
-	error = I2C_Receive(LTC4151_WRITE,LTC4151_READ,LTC4151_SENSE_MSB,&data_MSB,I2C_1);
+	error = I2C_Receive(LTC4151_WRITE,LTC4151_READ,LTC4151_SENSE_MSB,&data_MSB,ltc4151->port);
 		if (error == -1)
 		{
 			return (float)error;

@@ -9,20 +9,10 @@ void set_clk()
     while(OSCCONbits.LOCK !=1);
 }
 
-void fujin_init_leds(){
-    TRISB = 0;
-//    CONF_LED_PWR = OUTPUT;
-//    CONF_LED_LOWBAT = OUTPUT;
-//    CONF_LED_CANRX = OUTPUT;
-//    CONF_LED_CANTX= OUTPUT;
-//    CONF_LED_RELAY= OUTPUT;
-}
-
 void fujin_init_io(){
 
     // LEDS
-    fujin_init_leds();
-
+    TRISB = 0;
     // UART 1 Pins // XBEE
     // _RP69R = 1; // RD5
     CONF_U1TX = OUTPUT;
@@ -66,8 +56,24 @@ void fujin_init_io(){
 }
 
 
+sUartParam ubParam={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
+uint8_t uart_buf[80];
 
 void fujin_init_uart(){
+        UartInit(UART_1,&ubParam);
+	UartTxEnable(UART_1, ENABLE);
+	UartInitPortStruc(UART_1, NULL,NULL);
+	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
+	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
+	UartTxFrame(UART_1, "Notus Started \n", 15);
+
+        
+        UartInit(UART_2,&ubParam);
+	UartTxEnable(UART_2, ENABLE);
+	UartInitPortStruc(UART_2, NULL,NULL);
+	UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
+	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
+	UartTxFrame(UART_2, "Notus Started \n", 15);
 }
 
 void fujin_init_i2c(){

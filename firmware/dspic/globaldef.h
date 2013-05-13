@@ -1,15 +1,20 @@
 #ifndef __GLOBALDEF_H_
 #define __GLOBALDEF_H_
 
-typedef unsigned char      bool;
-typedef unsigned char      uint8_t;
-typedef char               int8_t;
-typedef unsigned int       uint16_t;
-typedef int                int16_t;
-typedef unsigned long      uint32_t;
-typedef long               int32_t;
-typedef unsigned long long uint64_t;
-typedef long long          int64_t;
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+//typedef unsigned char      bool;
+//typedef unsigned char      uint8_t;
+//typedef char               int8_t;
+//typedef unsigned int       uint16_t;
+//typedef int                int16_t;
+//typedef unsigned long      uint32_t;
+//typedef long               int32_t;
+//typedef unsigned long long uint64_t;
+//typedef long long          int64_t;
 
 #ifndef NULL
 #define NULL    0

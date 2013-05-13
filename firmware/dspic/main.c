@@ -15,43 +15,21 @@ _FWDT(FWDTEN_OFF); // Watchdog timer software enabled
 
 uint8_t print=0;
 
-sUartParam ubParam={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
-uint8_t buf[80];
-
 int main(int argc, char** argv) {
-    // INIT LED FIRST
-    // SET ALL LED ON
-    fujin_init_leds();
-    PORTB =0x7800;
 
     set_clk();
     fujin_init_io();
+    PORTB =0x7800;
+
     fujin_init_i2c();
+    fujin_init_uart();
+//  fujin_init_can();
 
-    	UartInit(UART_1,&ubParam);
-	UartTxEnable(UART_1, ENABLE);
-	UartInitPortStruc(UART_1, NULL,NULL);
-	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
-	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
-	UartTxFrame(UART_1, "Notus Started \n", 15);
-        UartInit(UART_2,&ubParam);
-	UartTxEnable(UART_2, ENABLE);
-	UartInitPortStruc(UART_2, NULL,NULL);
-	UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
-	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
-	UartTxFrame(UART_2, "Notus Started \n", 15);
+//  fujin_init_ltc4151();
+//  fujin_init_cat24c256w();
+//  fujin_init_ds1338();
 
-        //UartInit(UART_2,&ubParam);
-	//UartTxEnable(UART_2, ENABLE);
-	//UartInitPortStruc(UART_2, NULL,NULL);
-	//UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
-	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
-	//UartTxFrame(UART_2, "Notus Started \n", 15);
-
-    //LED_PWR    =OFF;Nop();
-    //LED_CANRX  =OFF;Nop();
-    //LED_CANTX  =ON;Nop();
-    //LED_LOWBAT =;Nop();
+// After initialization reset the leds
     //ltc4151_init();
     Init_Timer5(10.0);
     // 0xDE
