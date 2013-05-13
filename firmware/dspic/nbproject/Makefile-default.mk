@@ -45,11 +45,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/i2c.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/cat24c256w.o ${OBJECTDIR}/ds1338.o ${OBJECTDIR}/ltc4151.o ${OBJECTDIR}/M_TMR.o ${OBJECTDIR}/chinookpack_unpack.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/fujin.o.d ${OBJECTDIR}/i2c.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/cat24c256w.o.d ${OBJECTDIR}/ds1338.o.d ${OBJECTDIR}/ltc4151.o.d ${OBJECTDIR}/M_TMR.o.d ${OBJECTDIR}/chinookpack_unpack.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/lib/currentmonitor/ltc4151.o ${OBJECTDIR}/lib/dspic/i2c/i2c.o ${OBJECTDIR}/lib/dspic/timer/timer.o ${OBJECTDIR}/lib/dspic/uart/uart.o ${OBJECTDIR}/lib/eeprom/cat24c256w.o ${OBJECTDIR}/lib/rtc/ds1338.o ${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d ${OBJECTDIR}/lib/dspic/i2c/i2c.o.d ${OBJECTDIR}/lib/dspic/timer/timer.o.d ${OBJECTDIR}/lib/dspic/uart/uart.o.d ${OBJECTDIR}/lib/eeprom/cat24c256w.o.d ${OBJECTDIR}/lib/rtc/ds1338.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/fujin.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/i2c.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/cat24c256w.o ${OBJECTDIR}/ds1338.o ${OBJECTDIR}/ltc4151.o ${OBJECTDIR}/M_TMR.o ${OBJECTDIR}/chinookpack_unpack.o
+OBJECTFILES=${OBJECTDIR}/lib/currentmonitor/ltc4151.o ${OBJECTDIR}/lib/dspic/i2c/i2c.o ${OBJECTDIR}/lib/dspic/timer/timer.o ${OBJECTDIR}/lib/dspic/uart/uart.o ${OBJECTDIR}/lib/eeprom/cat24c256w.o ${OBJECTDIR}/lib/rtc/ds1338.o ${OBJECTDIR}/main.o ${OBJECTDIR}/fujin.o
 
 
 CFLAGS=
@@ -73,6 +73,42 @@ MP_LINKER_FILE_OPTION=,--script=p33EP512MC806.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/lib/currentmonitor/ltc4151.o: lib/currentmonitor/ltc4151.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/currentmonitor 
+	@${RM} ${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/currentmonitor/ltc4151.c  -o ${OBJECTDIR}/lib/currentmonitor/ltc4151.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/dspic/i2c/i2c.o: lib/dspic/i2c/i2c.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/dspic/i2c 
+	@${RM} ${OBJECTDIR}/lib/dspic/i2c/i2c.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/dspic/i2c/i2c.c  -o ${OBJECTDIR}/lib/dspic/i2c/i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/dspic/i2c/i2c.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/dspic/i2c/i2c.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/dspic/timer/timer.o: lib/dspic/timer/timer.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/dspic/timer 
+	@${RM} ${OBJECTDIR}/lib/dspic/timer/timer.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/dspic/timer/timer.c  -o ${OBJECTDIR}/lib/dspic/timer/timer.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/dspic/timer/timer.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/dspic/timer/timer.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/dspic/uart/uart.o: lib/dspic/uart/uart.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/dspic/uart 
+	@${RM} ${OBJECTDIR}/lib/dspic/uart/uart.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/dspic/uart/uart.c  -o ${OBJECTDIR}/lib/dspic/uart/uart.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/dspic/uart/uart.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/dspic/uart/uart.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/eeprom/cat24c256w.o: lib/eeprom/cat24c256w.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/eeprom 
+	@${RM} ${OBJECTDIR}/lib/eeprom/cat24c256w.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/eeprom/cat24c256w.c  -o ${OBJECTDIR}/lib/eeprom/cat24c256w.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/eeprom/cat24c256w.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/eeprom/cat24c256w.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/rtc/ds1338.o: lib/rtc/ds1338.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/rtc 
+	@${RM} ${OBJECTDIR}/lib/rtc/ds1338.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/rtc/ds1338.c  -o ${OBJECTDIR}/lib/rtc/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/rtc/ds1338.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/rtc/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/main.o.d 
@@ -85,49 +121,43 @@ ${OBJECTDIR}/fujin.o: fujin.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE)  fujin.c  -o ${OBJECTDIR}/fujin.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/fujin.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
 	@${FIXDEPS} "${OBJECTDIR}/fujin.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
-${OBJECTDIR}/i2c.o: i2c.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/i2c.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  i2c.c  -o ${OBJECTDIR}/i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/i2c.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/i2c.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/uart.o: uart.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/uart.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  uart.c  -o ${OBJECTDIR}/uart.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/uart.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/uart.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/cat24c256w.o: cat24c256w.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/cat24c256w.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  cat24c256w.c  -o ${OBJECTDIR}/cat24c256w.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/cat24c256w.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/cat24c256w.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/ds1338.o: ds1338.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/ds1338.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ds1338.c  -o ${OBJECTDIR}/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/ds1338.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/ltc4151.o: ltc4151.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/ltc4151.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ltc4151.c  -o ${OBJECTDIR}/ltc4151.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/ltc4151.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/ltc4151.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/M_TMR.o: M_TMR.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/M_TMR.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  M_TMR.c  -o ${OBJECTDIR}/M_TMR.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/M_TMR.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/M_TMR.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/chinookpack_unpack.o: chinookpack_unpack.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/chinookpack_unpack.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  chinookpack_unpack.c  -o ${OBJECTDIR}/chinookpack_unpack.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/chinookpack_unpack.o.d"        -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/chinookpack_unpack.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
 else
+${OBJECTDIR}/lib/currentmonitor/ltc4151.o: lib/currentmonitor/ltc4151.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/currentmonitor 
+	@${RM} ${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/currentmonitor/ltc4151.c  -o ${OBJECTDIR}/lib/currentmonitor/ltc4151.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/dspic/i2c/i2c.o: lib/dspic/i2c/i2c.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/dspic/i2c 
+	@${RM} ${OBJECTDIR}/lib/dspic/i2c/i2c.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/dspic/i2c/i2c.c  -o ${OBJECTDIR}/lib/dspic/i2c/i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/dspic/i2c/i2c.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/dspic/i2c/i2c.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/dspic/timer/timer.o: lib/dspic/timer/timer.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/dspic/timer 
+	@${RM} ${OBJECTDIR}/lib/dspic/timer/timer.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/dspic/timer/timer.c  -o ${OBJECTDIR}/lib/dspic/timer/timer.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/dspic/timer/timer.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/dspic/timer/timer.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/dspic/uart/uart.o: lib/dspic/uart/uart.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/dspic/uart 
+	@${RM} ${OBJECTDIR}/lib/dspic/uart/uart.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/dspic/uart/uart.c  -o ${OBJECTDIR}/lib/dspic/uart/uart.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/dspic/uart/uart.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/dspic/uart/uart.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/eeprom/cat24c256w.o: lib/eeprom/cat24c256w.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/eeprom 
+	@${RM} ${OBJECTDIR}/lib/eeprom/cat24c256w.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/eeprom/cat24c256w.c  -o ${OBJECTDIR}/lib/eeprom/cat24c256w.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/eeprom/cat24c256w.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/eeprom/cat24c256w.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
+${OBJECTDIR}/lib/rtc/ds1338.o: lib/rtc/ds1338.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/rtc 
+	@${RM} ${OBJECTDIR}/lib/rtc/ds1338.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/rtc/ds1338.c  -o ${OBJECTDIR}/lib/rtc/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/rtc/ds1338.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
+	@${FIXDEPS} "${OBJECTDIR}/lib/rtc/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/main.o.d 
@@ -139,48 +169,6 @@ ${OBJECTDIR}/fujin.o: fujin.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/fujin.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  fujin.c  -o ${OBJECTDIR}/fujin.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/fujin.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
 	@${FIXDEPS} "${OBJECTDIR}/fujin.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/i2c.o: i2c.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/i2c.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  i2c.c  -o ${OBJECTDIR}/i2c.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/i2c.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/i2c.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/uart.o: uart.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/uart.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  uart.c  -o ${OBJECTDIR}/uart.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/uart.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/uart.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/cat24c256w.o: cat24c256w.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/cat24c256w.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  cat24c256w.c  -o ${OBJECTDIR}/cat24c256w.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/cat24c256w.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/cat24c256w.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/ds1338.o: ds1338.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/ds1338.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ds1338.c  -o ${OBJECTDIR}/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/ds1338.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/ltc4151.o: ltc4151.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/ltc4151.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  ltc4151.c  -o ${OBJECTDIR}/ltc4151.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/ltc4151.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/ltc4151.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/M_TMR.o: M_TMR.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/M_TMR.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  M_TMR.c  -o ${OBJECTDIR}/M_TMR.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/M_TMR.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/M_TMR.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/chinookpack_unpack.o: chinookpack_unpack.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
-	@${RM} ${OBJECTDIR}/chinookpack_unpack.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  chinookpack_unpack.c  -o ${OBJECTDIR}/chinookpack_unpack.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/chinookpack_unpack.o.d"        -g -omf=elf -O0 -I"/Users/pastjean/Documents/projets/fujin/firmware/dspic" -msmart-io=1 -Wall -msfr-warn=off --std=c99
-	@${FIXDEPS} "${OBJECTDIR}/chinookpack_unpack.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 

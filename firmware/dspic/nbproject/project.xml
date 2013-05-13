@@ -3,7 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>dspic</name>
+            <name>fujin-dspic</name>
             <creation-uuid>ea78ef91-2e5f-45a7-8b4c-53a08b1e4aeb</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>

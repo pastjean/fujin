@@ -6,11 +6,10 @@
 #include "globaldef.h"
 
 // Peripheral includes
-#include "M_TMR.h"
-#include "i2c.h"
+#include "lib/dspic/dspic.h"
 
 // Device includes
-#include "ltc4151.h"
+#include "lib/currentmonitor/ltc4151.h"
 
 #define FUJIN_OK                0
 #define FUJIN_ERR               -1

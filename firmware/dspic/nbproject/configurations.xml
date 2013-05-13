@@ -4,22 +4,43 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="chinookpack" displayName="chinookpack" projectFiles="true">
-        <itemPath>chinookpack/fbuffer.h</itemPath>
-        <itemPath>chinookpack/object.h</itemPath>
-        <itemPath>chinookpack/pack.h</itemPath>
-        <itemPath>chinookpack/unpack.h</itemPath>
-      </logicalFolder>
       <itemPath>globaldef.h</itemPath>
       <itemPath>hardware_profile.h</itemPath>
       <itemPath>fujin.h</itemPath>
-      <itemPath>i2c.h</itemPath>
-      <itemPath>uart.h</itemPath>
-      <itemPath>cat24c256w.h</itemPath>
-      <itemPath>ds1338.h</itemPath>
-      <itemPath>ltc4151.h</itemPath>
-      <itemPath>M_TMR.h</itemPath>
-      <itemPath>chinookpack.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="lib" displayName="lib" projectFiles="true">
+      <logicalFolder name="currentmonitor"
+                     displayName="currentmonitor"
+                     projectFiles="true">
+        <itemPath>lib/currentmonitor/ltc4151.c</itemPath>
+        <itemPath>lib/currentmonitor/ltc4151.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="dspic" displayName="dspic" projectFiles="true">
+        <logicalFolder name="can" displayName="can" projectFiles="true">
+        </logicalFolder>
+        <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
+          <itemPath>lib/dspic/i2c/i2c.c</itemPath>
+          <itemPath>lib/dspic/i2c/i2c.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="timer" displayName="timer" projectFiles="true">
+          <itemPath>lib/dspic/timer/timer.c</itemPath>
+          <itemPath>lib/dspic/timer/timer.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="uart" displayName="uart" projectFiles="true">
+          <itemPath>lib/dspic/uart/uart.c</itemPath>
+          <itemPath>lib/dspic/uart/uart.h</itemPath>
+        </logicalFolder>
+        <itemPath>lib/dspic/dspic.h</itemPath>
+        <itemPath>lib/dspic/p33EP512MC806.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="eeprom" displayName="eeprom" projectFiles="true">
+        <itemPath>lib/eeprom/cat24c256w.c</itemPath>
+        <itemPath>lib/eeprom/cat24c256w.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="rtc" displayName="rtc" projectFiles="true">
+        <itemPath>lib/rtc/ds1338.c</itemPath>
+        <itemPath>lib/rtc/ds1338.h</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -30,13 +51,6 @@
                    projectFiles="true">
       <itemPath>main.c</itemPath>
       <itemPath>fujin.c</itemPath>
-      <itemPath>i2c.c</itemPath>
-      <itemPath>uart.c</itemPath>
-      <itemPath>cat24c256w.c</itemPath>
-      <itemPath>ds1338.c</itemPath>
-      <itemPath>ltc4151.c</itemPath>
-      <itemPath>M_TMR.c</itemPath>
-      <itemPath>chinookpack_unpack.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -45,7 +59,7 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>chinookpack</Elem>
+    <Elem>lib</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

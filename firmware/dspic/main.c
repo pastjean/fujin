@@ -3,7 +3,9 @@
 #include "globaldef.h"
 #include "hardware_profile.h"
 #include "fujin.h"
-#include "uart.h"
+
+
+
 #include <stdio.h>
 #include <string.h>
 // Device Configurations registers

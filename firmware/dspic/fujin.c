@@ -1,4 +1,5 @@
 #include "fujin.h"
+#include "lib/dspic/dspic.h"
 
 void set_clk()
 {
