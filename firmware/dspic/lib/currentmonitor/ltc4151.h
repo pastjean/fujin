@@ -1,7 +1,8 @@
 #ifndef __LTC4151_H
 #define	__LTC4151_H
 
-#include <globaldef.h>
+#include "../../globaldef.h"
+#include "../../hardware_profile.h"
 
 typedef struct{
     uint8_t port;

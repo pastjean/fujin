@@ -1,56 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="62">
   <logicalFolder name="root" displayName="root" projectFiles="true">
-    <logicalFolder name="HeaderFiles"
-                   displayName="Header Files"
-                   projectFiles="true">
+    <logicalFolder name="dspic" displayName="dspic" projectFiles="true">
+      <logicalFolder name="lib" displayName="lib" projectFiles="true">
+        <logicalFolder name="chinookpack" displayName="chinookpack" projectFiles="true">
+          <itemPath>lib/chinookpack/fbuffer.h</itemPath>
+          <itemPath>lib/chinookpack/object.h</itemPath>
+          <itemPath>lib/chinookpack/pack.h</itemPath>
+          <itemPath>lib/chinookpack/unpack.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="currentmonitor"
+                       displayName="currentmonitor"
+                       projectFiles="true">
+          <itemPath>lib/currentmonitor/ltc4151.c</itemPath>
+          <itemPath>lib/currentmonitor/ltc4151.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="dspic" displayName="dspic" projectFiles="true">
+          <logicalFolder name="can" displayName="can" projectFiles="true">
+            <itemPath>lib/dspic/can/can.c</itemPath>
+            <itemPath>lib/dspic/can/can.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="dma" displayName="dma" projectFiles="true">
+            <itemPath>lib/dspic/dma/dma.c</itemPath>
+            <itemPath>lib/dspic/dma/dma.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
+            <itemPath>lib/dspic/i2c/i2c.c</itemPath>
+            <itemPath>lib/dspic/i2c/i2c.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="timer" displayName="timer" projectFiles="true">
+            <itemPath>lib/dspic/timer/timer.c</itemPath>
+            <itemPath>lib/dspic/timer/timer.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="uart" displayName="uart" projectFiles="true">
+            <itemPath>lib/dspic/uart/uart.c</itemPath>
+            <itemPath>lib/dspic/uart/uart.h</itemPath>
+          </logicalFolder>
+          <itemPath>lib/dspic/dspic.h</itemPath>
+          <itemPath>lib/dspic/p33EP512MC806.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="eeprom" displayName="eeprom" projectFiles="true">
+          <itemPath>lib/eeprom/cat24c256w.c</itemPath>
+          <itemPath>lib/eeprom/cat24c256w.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="rtc" displayName="rtc" projectFiles="true">
+          <itemPath>lib/rtc/ds1338.c</itemPath>
+          <itemPath>lib/rtc/ds1338.h</itemPath>
+        </logicalFolder>
+        <itemPath>lib/chinookpack.h</itemPath>
+        <itemPath>lib/chinookpack_unpack.c</itemPath>
+      </logicalFolder>
+      <itemPath>config.h</itemPath>
+      <itemPath>fujin.c</itemPath>
+      <itemPath>fujin.h</itemPath>
       <itemPath>globaldef.h</itemPath>
       <itemPath>hardware_profile.h</itemPath>
-      <itemPath>fujin.h</itemPath>
-    </logicalFolder>
-    <logicalFolder name="lib" displayName="lib" projectFiles="true">
-      <logicalFolder name="currentmonitor"
-                     displayName="currentmonitor"
-                     projectFiles="true">
-        <itemPath>lib/currentmonitor/ltc4151.c</itemPath>
-        <itemPath>lib/currentmonitor/ltc4151.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="dspic" displayName="dspic" projectFiles="true">
-        <logicalFolder name="can" displayName="can" projectFiles="true">
-        </logicalFolder>
-        <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
-          <itemPath>lib/dspic/i2c/i2c.c</itemPath>
-          <itemPath>lib/dspic/i2c/i2c.h</itemPath>
-        </logicalFolder>
-        <logicalFolder name="timer" displayName="timer" projectFiles="true">
-          <itemPath>lib/dspic/timer/timer.c</itemPath>
-          <itemPath>lib/dspic/timer/timer.h</itemPath>
-        </logicalFolder>
-        <logicalFolder name="uart" displayName="uart" projectFiles="true">
-          <itemPath>lib/dspic/uart/uart.c</itemPath>
-          <itemPath>lib/dspic/uart/uart.h</itemPath>
-        </logicalFolder>
-        <itemPath>lib/dspic/dspic.h</itemPath>
-        <itemPath>lib/dspic/p33EP512MC806.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="eeprom" displayName="eeprom" projectFiles="true">
-        <itemPath>lib/eeprom/cat24c256w.c</itemPath>
-        <itemPath>lib/eeprom/cat24c256w.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="rtc" displayName="rtc" projectFiles="true">
-        <itemPath>lib/rtc/ds1338.c</itemPath>
-        <itemPath>lib/rtc/ds1338.h</itemPath>
-      </logicalFolder>
+      <itemPath>main.c</itemPath>
+      <itemPath>chinook.h</itemPath>
+      <itemPath>can_chinook3.h</itemPath>
+      <itemPath>utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-    </logicalFolder>
-    <logicalFolder name="SourceFiles"
-                   displayName="Source Files"
-                   projectFiles="true">
-      <itemPath>main.c</itemPath>
-      <itemPath>fujin.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -59,7 +71,7 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>lib</Elem>
+    <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -107,8 +119,7 @@
         <property key="enable-short-double" value="false"/>
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
-        <property key="extra-include-directories"
-                  value="/Users/pastjean/Documents/projets/fujin/firmware/dspic"/>
+        <property key="extra-include-directories" value=""/>
         <property key="isolate-each-function" value="false"/>
         <property key="keep-inline" value="false"/>
         <property key="oXC16gcc-align-arr" value="false"/>
@@ -131,7 +142,6 @@
         <property key="preprocessor-macros" value=""/>
         <property key="scalar-model" value="default"/>
         <property key="use-cci" value="false"/>
-        <appendMe value="--std=c99"/>
       </C30>
       <C30-AS>
         <property key="assembler-symbols" value=""/>
@@ -195,6 +205,7 @@
         <property key="legacy-libc" value="false"/>
         <property key="oXC16glb-macros" value=""/>
         <property key="output-file-format" value="elf"/>
+        <property key="save-temps" value="false"/>
       </C30Global>
       <ICD3PlatformTool>
         <property key="ADC 1" value="true"/>
@@ -282,7 +293,7 @@
         <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
         <property key="programoptions.uselvpprogramming" value="false"/>
-        <property key="voltagevalue" value="3.5"/>
+        <property key="voltagevalue" value="3.25"/>
       </ICD3PlatformTool>
     </conf>
   </confs>

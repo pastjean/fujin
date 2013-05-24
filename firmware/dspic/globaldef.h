@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// Thoses types are in stdint and others
+
 //typedef unsigned char      bool;
 //typedef unsigned char      uint8_t;
 //typedef char               int8_t;

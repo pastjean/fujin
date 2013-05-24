@@ -2,8 +2,8 @@
 #define _I2C_MODULE_H
 
 #include"p33EP512MC806.h"
-#include "globaldef.h"
-#include "hardware_profile.h"
+#include "../../../globaldef.h"
+#include "../../../hardware_profile.h"
 
 
 /*Macro for I2C bus speed calculation*/

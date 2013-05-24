@@ -1,7 +1,28 @@
 #include "fujin.h"
 #include "lib/dspic/dspic.h"
 
-void set_clk()
+Fujin_s fujin;
+
+void fujin_init_board(){
+    fujin_set_clk();
+    fujin_init_io();
+    PORTB =0x7800;
+
+    fujin_init_i2c();
+    fujin_init_uart();
+    fujin_init_can();
+
+    fujin_init_vmon();
+    fujin_init_eeprom();
+    fujin_init_rtc();
+
+    timer5_init(5.0);
+    
+    fujin.chinook.power.v = -1;
+    fujin.chinook.power.i = -1;
+}
+
+void fujin_set_clk()
 {
     _PLLPRE=0;
     _PLLPOST=0;
@@ -15,38 +36,37 @@ void fujin_init_io(){
     TRISB = 0;
     // UART 1 Pins // XBEE
     // _RP69R = 1; // RD5
-    CONF_U1TX = OUTPUT;
-    CONF_U1RX = INPUT;
+    CONF_U1TX_PIN = OUTPUT;
+    CONF_U1RX_PIN = INPUT;
     _RP97R = 0b000001;  // TX
     _U1RXR = 96; // RX
 
     // UART 2 Pins // USB-Serial
-    CONF_U2TX = OUTPUT;
-    CONF_U2RX = INPUT;
+    CONF_U2TX_PIN = OUTPUT;
+    CONF_U2RX_PIN = INPUT;
     _RP101R = 0b000011; //TX
     _U2RXR = 100;//RX
 //    _RP101R = 0b000001; //TX
 //    _U1RXR = 100; // RX
 
     // CAN 1 Pins
-    CONF_CANTX = OUTPUT;
-    CONF_CANRX = INPUT;
+    CONF_CANTX_PIN = OUTPUT;
+    CONF_CANRX_PIN = INPUT;
     _RP99R = 0b001110;    // CAN1TX
     _C1RXR = 98;
 
     // MISC Pins
-    CONF_EEPROM_WP = OUTPUT;
-    CONF_SD_CARD_CS = OUTPUT;
+    CONF_EEPROM_WP_PIN = OUTPUT;
+    CONF_SD_CARD_CS_PIN = OUTPUT;
 
     // SPI Pins
-    // SPI2 is an autonome guy he configures himself alone
-    CONF_SDO = OUTPUT;
-    CONF_SCK = OUTPUT;
-    CONF_SDI = INPUT;
-    _RP120R = 0b001000; // SDO2
-    _RP118R = 0b001001; // SCK2
-    //_SDI2R  = 119;      // SDI2
-
+    // SPI2 is an autonomus guy he configures himself alone
+    //CONF_SDO_PIN = OUTPUT;
+    //CONF_SCK_PIN = OUTPUT;
+    //CONF_SDI_PIN = INPUT;
+    //_RP120R = 0b001000; // SDO2
+    //_RP118R = 0b001001; // SCK2
+    
     // I2C Pins
     // You dont need to configure i2c pins since the i2c module configures
     // them like a big boy
@@ -56,26 +76,90 @@ void fujin_init_io(){
 }
 
 
-sUartParam ubParam={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
 uint8_t uart_buf[80];
 
 void fujin_init_uart(){
+#if ENABLE_UART == TRUE
+        sUartParam ubParam={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
+
+    #if ENABLE_XBEE == TRUE
         UartInit(UART_1,&ubParam);
 	UartTxEnable(UART_1, ENABLE);
 	UartInitPortStruc(UART_1, NULL,NULL);
 	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
 	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
 	UartTxFrame(UART_1, "Notus Started \n", 15);
-
-        
+        fujin.has_xbee=true;
+    #else
+        fujin.has_xbee=false;
+    #endif
+    #if ENABLE_USBSERIAL == TRUE
         UartInit(UART_2,&ubParam);
 	UartTxEnable(UART_2, ENABLE);
 	UartInitPortStruc(UART_2, NULL,NULL);
 	UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
 	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
 	UartTxFrame(UART_2, "Notus Started \n", 15);
+        fujin.has_usbserial=true;
+    #else
+        fujin.has_usbserial=false;
+    #endif
+    fujin.has_uart=true;
+#else
+    fujin.has_uart=false;
+#endif
 }
 
 void fujin_init_i2c(){
-    	I2C_Init(I2C_1,100000.0f);
+#if ENABLE_I2C == TRUE
+    I2C_Init(I2C_1,100000.0f);
+    fujin.has_i2c=true;
+#else
+    fujin.has_i2c=false;
+#endif
+}
+
+void fujin_init_rtc(){
+#if ENABLE_RTC == TRUE && ENABLE_I2C == TRUE
+    fujin.has_rtc=true;
+    #error "fujin_init_rtc() not implemented"
+#else
+    fujin.has_rtc=false;
+#endif
+}
+
+void fujin_init_vmon(){
+#if ENABLE_VMON == TRUE && ENABLE_I2C == TRUE
+    ltc4151_init(&(fujin.ltc4151_state),I2C_1);    
+    fujin.has_vmon=true;
+#else
+    fujin.has_vmon=false;
+#endif
+}
+void fujin_init_eeprom(){
+#if ENABLE_EEPROM == TRUE && ENABLE_I2C == TRUE
+    fujin.has_eeprom=true;
+    #error "fujin_init_eeprom() not implemented"
+#else
+    fujin.has_eeprom=false;
+#endif
+
+}
+
+void fujin_init_can(){
+#if ENABLE_CAN == TRUE
+    fujin.has_can=true;
+    init_CAN(CAN_NORMAL, 8, 2, 3, 7);
+#else
+    fujin.has_can=false;
+#endif
+}
+
+void fujin_init_spi(){
+#if ENABLE_SPI == TRUE
+    fujin.has_spi=true;
+
+#else
+    fujin.has_can=false;
+#endif
 }

@@ -1,5 +1,8 @@
 #include"i2c.h"
 
+uint8_t ubI2cTimeout = 0;
+
+
 static I2C1CONBITS* I2cxconbits[] =
 {
 	 (I2C1CONBITS*)&I2C1CONbits,
@@ -30,7 +33,7 @@ static uint16_t* I2cxrcv[] =
 	 (uint16_t*)&I2C2RCV
 };
 
-void I2CFlag(void);
+bool I2CFlag(void);
 bool IsI2CInterfaceValid(uint8_t ubI2cNo);
 
 bool I2C_Init(uint8_t ubI2cNo,float fSpeed)
@@ -164,10 +167,18 @@ bool I2C_Receive(uint8_t ubAddressWrite,uint8_t ubAddressRead,uint8_t ubRegister
 }
 
 
-void I2CFlag(void)
+bool I2CFlag(void)
 {
-while(IFS1bits.MI2C1IF==0);
-IFS1bits.MI2C1IF=0;//I2C interrupt flag
+    bool bValid = TRUE;
+
+    while(IFS1bits.MI2C1IF==0 || ubI2cTimeout);
+    if(ubI2cTimeout)
+    {
+        bValid = FALSE;
+    }
+    IFS1bits.MI2C1IF=0;//I2C interrupt flag
+
+    return bValid;
 }
 
 bool IsI2CInterfaceValid(uint8_t ubI2cNo)

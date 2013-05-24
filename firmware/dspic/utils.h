@@ -9,6 +9,7 @@
 #define	UTILS_H
 
 #include "math.h"
+#include "string.h"
 
 void clear_buf(void* buf,size_t len){
     memset(buf,0,len);

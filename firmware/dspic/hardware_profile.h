@@ -27,56 +27,56 @@
 #define LED_CANRX  PORTBbits.RB13
 #define LED_CANTX  PORTBbits.RB14
 #define LED_RELAY  PORTBbits.RB15
-#define SWITCH_RELAY  PORTBbits.RB15
+#define SWITCH_RELAY  _LATB15
 
 // Config LEDS
-#define CONF_LED_PWR    TRISBbits.TRISB11
-#define CONF_LED_LOWBAT TRISBbits.TRISB12
-#define CONF_LED_CANRX  TRISBbits.TRISB13
-#define CONF_LED_CANTX  TRISBbits.TRISB14
-#define CONF_LED_RELAY  TRISBbits.TRISB15
+#define CONF_LED_PWR_PIN    TRISBbits.TRISB11
+#define CONF_LED_LOWBAT_PIN TRISBbits.TRISB12
+#define CONF_LED_CANRX_PIN  TRISBbits.TRISB13
+#define CONF_LED_CANTX_PIN  TRISBbits.TRISB14
+#define CONF_LED_RELAY_PIN  TRISBbits.TRISB15
 
 // UART
 // UART1 is USB-Serial
 // UART2 is XBee
-#define U2RX PORTFbits.RF4
-#define U2TX PORTFbits.RF5
-#define U1TX PORTFbits.RF1
-#define U1RX PORTFbits.RF0
+#define U2RX_PIN PORTFbits.RF4
+#define U2TX_PIN PORTFbits.RF5
+#define U1TX_PIN PORTFbits.RF1
+#define U1RX_PIN PORTFbits.RF0
 
 // Config UART
-#define CONF_U2RX TRISFbits.TRISF4
-#define CONF_U2TX TRISFbits.TRISF5
-#define CONF_U1TX TRISFbits.TRISF1
-#define CONF_U1RX TRISFbits.TRISF0
+#define CONF_U2RX_PIN TRISFbits.TRISF4
+#define CONF_U2TX_PIN TRISFbits.TRISF5
+#define CONF_U1TX_PIN TRISFbits.TRISF1
+#define CONF_U1RX_PIN TRISFbits.TRISF0
 
 // CAN
-#define CANRX PORTFbits.RF2
-#define CANTX PORTFbits.RF3
+#define CANRX_PIN PORTFbits.RF2
+#define CANTX_PIN PORTFbits.RF3
 // Config CAN
-#define CONF_CANRX TRISFbits.TRISF2
-#define CONF_CANTX TRISFbits.TRISF3
+#define CONF_CANRX_PIN TRISFbits.TRISF2
+#define CONF_CANTX_PIN TRISFbits.TRISF3
 
 // SPI
 #define SCK PORTGbits.RG6
 #define SDI PORTGbits.RG7
 #define SDO PORTGbits.RG8
 // Config SPI
-#define CONF_SCK TRISGbits.TRISG6
-#define CONF_SDI TRISGbits.TRISG7
-#define CONF_SDO TRISGbits.TRISG8
+#define CONF_SCK_PIN TRISGbits.TRISG6
+#define CONF_SDI_PIN TRISGbits.TRISG7
+#define CONF_SDO_PIN TRISGbits.TRISG8
 
 // I2C
 // Config I2C
-#define CONF_SCL TRISGbits.TRISG2
-#define CONF_SDA TRISGbits.TRISG3
+#define CONF_SCL_PIN TRISGbits.TRISG2
+#define CONF_SDA_PIN TRISGbits.TRISG3
 
 // Miscellaneous
 #define EEPROM_WP PORTEbits.RE6
 #define SD_CARD_CS PORTEbits.RE5
 // Config Miscellaneous
-#define CONF_EEPROM_WP TRISEbits.TRISE6
-#define CONF_SD_CARD_CS TRISEbits.TRISE5
+#define CONF_EEPROM_WP_PIN TRISEbits.TRISE6
+#define CONF_SD_CARD_CS_PIN TRISEbits.TRISE5
 
 
 #endif // __HARDWARE_PROFILE_H

@@ -1,21 +1,7 @@
-/*
-Propriété du 
-Club Chinook/ETS
-*/
-/******************************************************************
-					M_TMR.c
-******************************************************************/
+#include <p33EP512MC806.h>
+#include "../../../hardware_profile.h"
 
-#include "p33EP512MC806.h"
-#include "hardware_profile.h"
-/**********************CANbus Variables***************************/
-/*From M_ISR.c*/
-/*****************************************************************/
-
-/******************************************************************
-					TMR1
-******************************************************************/
-void Init_Timer1(void)
+void timer1_init(void)
 {
 	//Init Timer 1
 	TMR1 = 0x0000;
@@ -27,10 +13,8 @@ void Init_Timer1(void)
 	_T1IE = 1;// Disable Timer3 interrupt
 	T1CONbits.TON = 1;// Start Timer3
 }
-/******************************************************************
-					TMR2
-******************************************************************/
-void Init_Timer2(float freq)
+
+void timer2_init(float freq)
 {
 	float div=2.0f;
 	//Init Timer 2
@@ -63,16 +47,14 @@ void Init_Timer2(float freq)
 	_T2IF = 0;// Clear Timer2 interrupt
 	_T2IE = 1;// Enable Timer2 interrupt
 }
-/*****************************************************************/
-void Reset_Timeout(void)
+
+void timer_reset_timeout(void)
 {
 T2CONbits.TON = 0;// Stop Timer2
 TMR2 = 0;			//Reset the CAN bus timeout counter
 }
-/******************************************************************
-					TMR3
-******************************************************************/
-void Init_Timer3(float freq)
+
+void timer3_init(float freq)
 {
 	float div=2.0f;
 	//Init Timer 3
@@ -107,10 +89,7 @@ void Init_Timer3(float freq)
 	T3CONbits.TON = 1;// Start Timer3
 }
 
-/******************************************************************
-					TMR5
-******************************************************************/
-void Init_Timer5(float freq)
+void timer5_init(float freq)
 {
 	float div=2.0f;
 	//Init Timer 5
@@ -145,14 +124,10 @@ void Init_Timer5(float freq)
 	T5CONbits.TON = 1;// Start Timer5
 }
 
-
-
-
-
-/************************************************************/
-/*			        	Gated Timers				 		*/
-/************************************************************/
-void Init_Timer6(void)
+/***************************
+** Gated Timers
+****************************/
+void timer6_init(void)
 {
 	//Gate input
 	_T6CKR = 67;	//SIGNAL_IN3
@@ -165,8 +140,8 @@ void Init_Timer6(void)
 	_T6IE=1;
 	T6CONbits.TON	=1;
 }
-/**********************************************************/
-void Init_Timer7(void)
+
+void timer7_init(void)
 {
 	//Gate input
 	_T7CKR = 66;	//SIGNAL_IN2
@@ -180,8 +155,8 @@ void Init_Timer7(void)
 	_T7IE=1;
 	T7CONbits.TON	=1;
 }
-/**********************************************************/
-void Init_Timer8(void)
+
+void timer8_init(void)
 {
 	//Gate input
 	_T8CKR = 65;		//SIGNAL_IN1
@@ -194,8 +169,8 @@ void Init_Timer8(void)
 	_T8IE=1;
 	T8CONbits.TON	=1;
 }
-/**********************************************************/
-void Init_Timer9(void)
+
+void timer9_init(void)
 {
 	//Gate input
 	_T9CKR = 64;		//SIGNAL_IN0
@@ -208,4 +183,3 @@ void Init_Timer9(void)
 	_T9IE=1;
 	T9CONbits.TON	=1;
 }
-/**********************************************************/
