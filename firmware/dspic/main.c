@@ -3,7 +3,7 @@
 #include "lib/chinookpack.h"
 #include <stdio.h>
 #include <string.h>
-#include "skadi.h"
+#include "lib/skadi/skadi.h"
 
 // Device Configurations registers
 _FOSCSEL(FNOSC_FRCPLL); // select fast internal rc with pll
