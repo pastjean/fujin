@@ -57,7 +57,6 @@ int main(void) {
     // TODO: Read Eeprom Parameters
     //       and and set settings
 
-    int i=0;
     while(1){
 
         // 1. Read Current and SHUT DOWN RELAY if overloading
@@ -80,19 +79,12 @@ int main(void) {
 
         // 3. CAN Processing
         #if ENABLE_CAN == TRUE
-        while(print==0);
-        print=0;
-
-        LATBbits.LATB14 ^=1;
-
         clear_buf(can_buf,8);
         chinookpack_pack_float(&pk,fujin.chinook.power.i);
         memcpy(can_msg_current_buf,can_buf,3);
         send_CAN_msg(&can_msg_current, can_msg_current_buf, 2);
         while(is_CAN_msg_send(&can_msg_current) != TRUE);      // test si le message est envoyé
 
-        while(print==0);
-        print=0;
 
         clear_buf(can_buf,8);
         chinookpack_pack_float(&pk,fujin.chinook.power.v);
@@ -112,11 +104,17 @@ int main(void) {
         #if ENABLE_UART == TRUE
         // 4.1 XBEE Processing
         #if ENABLE_XBEE == TRUE
+// TODO: Si en listen mode send DATA
         #endif
         // 4.2 USB-Serial Processing
         #if ENABLE_USBSERIAL == TRUE
         #endif
         #endif
+
+        if(print==1){
+            print=0;
+            LATBbits.LATB14 ^= 1;
+        }
     }
 
     // Should never go there

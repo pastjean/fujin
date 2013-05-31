@@ -53,7 +53,7 @@ static inline int callback_int16(chinookpack_object* o, const char* buf, size_t*
 
 static inline int callback_float(chinookpack_object* o, const char* buf, size_t* off)
 { 
-  union { float f; long long i; } mem;
+  union { float f; uint32_t i; } mem;
   mem.i = (buf[*off] << 24)
          |(buf[*off+1] <<16)
          |(buf[*off+2] << 8)

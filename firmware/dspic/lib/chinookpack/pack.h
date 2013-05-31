@@ -157,22 +157,18 @@ __attribute__ ((unused)) static int chinookpack_pack_float(chinookpack_packer* p
 
 __attribute__ ((unused)) static int chinookpack_pack_raw(chinookpack_packer* pk, size_t l){
   	if(l < 32) {
-    char  d = 0xa0 | (uint8_t)l;
-    return pk->callback(pk->data, &d,1);
+            char buf[1];
+            buf[0]= 0xa0 | (uint8_t)l ;
+    return pk->callback(pk->data, buf,1);
 	} else if(l < 65536) {
 		char buf[3];
 		buf[0] = 0xda;
-    buf[1] = (l >> 8)  & 0xff;
-    buf[2] = (l     )  & 0xff;
-    return pk->callback(pk->data,buf,3);
+            buf[1] = (l >> 8)  & 0xff;
+            buf[2] = (l     )  & 0xff;
+          return pk->callback(pk->data,buf,3);
 	} else {
-		char buf[5];
-		buf[0] = 0xdb;
-    buf[1] = (l >> 24) & 0xff;
-    buf[2] = (l >> 16) & 0xff;
-    buf[3] = (l >> 8 ) & 0xff;
-    buf[4] = (l      ) & 0xff;
-    return pk->callback(pk->data,buf,5);
+            // Raw length not supported
+            return -1;
 	}
 }
 __attribute__ ((unused)) static int chinookpack_pack_raw_body(chinookpack_packer* pk, const void* b, size_t l){

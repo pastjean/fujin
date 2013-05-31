@@ -8,562 +8,630 @@
 /* Date	  : 19/04/2013                                      */
 /************************************************************/
 
+/************************************************************/
+/*			INCLUDES                            */
+/************************************************************/
 #include "uart.h"
 #include <string.h>
+/************************************************************/
 
+
+/************************************************************/
+/*                  PRIVATE VARIABLES                       */
+/************************************************************/
 /*Base address*/
-const static sUartInit_t* UartBase[] ={
-    (sUartInit_t*) 0x0220, /*Address 0x0220*/
-    (sUartInit_t*) 0x0230, /*Address 0x0230*/
-    (sUartInit_t*) 0x0250, /*Address 0x0250*/
-    (sUartInit_t*) 0x02B0 /*Address 0x02B0*/
+const static sUartInit_t* UartBase[] =
+{
+	 (sUartInit_t*)0x0220,	/*Address 0x0220*/
+	 (sUartInit_t*)0x0230,	/*Address 0x0230*/
+	 (sUartInit_t*)0x0250,	/*Address 0x0250*/
+	 (sUartInit_t*)0x02B0	/*Address 0x02B0*/
 };
 
 /*Interrupt Addresses*/
-static uint16_t* Iecx[] ={
-    (uint16_t*) 0x0820,
-    (uint16_t*) 0x0822,
-    (uint16_t*) 0x0824,
-    (uint16_t*) 0x0826,
-    (uint16_t*) 0x0828,
-    (uint16_t*) 0x082A,
-    (uint16_t*) 0x082C,
-    (uint16_t*) 0x082E,
-    (uint16_t*) 0x0830
+static uint16_t* Iecx[] =
+{
+	(uint16_t*)0x0820,
+	(uint16_t*)0x0822,
+	(uint16_t*)0x0824,
+	(uint16_t*)0x0826,
+	(uint16_t*)0x0828,
+	(uint16_t*)0x082A,
+	(uint16_t*)0x082C,
+	(uint16_t*)0x082E,
+	(uint16_t*)0x0830
 };
 
 /*Flags Adresses*/
-static uint16_t* Ifsx[] ={
-    (uint16_t*) 0x0800,
-    (uint16_t*) 0x0802,
-    (uint16_t*) 0x0804,
-    (uint16_t*) 0x0806,
-    (uint16_t*) 0x0808,
-    (uint16_t*) 0x080A,
-    (uint16_t*) 0x080C,
-    (uint16_t*) 0x080E,
-    (uint16_t*) 0x0810
+static uint16_t* Ifsx[] =
+{
+	(uint16_t*)0x0800,
+	(uint16_t*)0x0802,
+	(uint16_t*)0x0804,
+	(uint16_t*)0x0806,
+	(uint16_t*)0x0808,
+	(uint16_t*)0x080A,
+	(uint16_t*)0x080C,
+	(uint16_t*)0x080E,
+	(uint16_t*)0x0810
 };
 
 /*Interrupt Priority Adresses*/
-static uint16_t* Ipcx[] ={
-    (uint16_t*) 0x0840,
-    (uint16_t*) 0x0842,
-    (uint16_t*) 0x0844,
-    (uint16_t*) 0x0846,
-    (uint16_t*) 0x0848,
-    (uint16_t*) 0x084A,
-    (uint16_t*) 0x084C,
-    (uint16_t*) 0x084E,
-    (uint16_t*) 0x0850,
-    (uint16_t*) 0x0852,
-    (uint16_t*) 0x0854,
-    (uint16_t*) 0x0856,
-    (uint16_t*) 0x0858,
-    (uint16_t*) 0x085A,
-    (uint16_t*) 0x085C,
-    (uint16_t*) 0x085E,
-    (uint16_t*) 0x0860,
-    (uint16_t*) 0x0862,
-    (uint16_t*) 0x0864,
-    (uint16_t*) 0x0866,
-    (uint16_t*) 0x0868,
-    (uint16_t*) 0x086A,
-    (uint16_t*) 0x086C,
-    (uint16_t*) 0x086E,
-    (uint16_t*) 0x0870,
-    (uint16_t*) 0x0872,
-    (uint16_t*) 0x0874,
-    (uint16_t*) 0x0876,
-    (uint16_t*) 0x0878,
-    (uint16_t*) 0x087A,
-    (uint16_t*) 0x087C,
-    (uint16_t*) 0x087E,
-    (uint16_t*) 0x0880,
-    (uint16_t*) 0x0882,
-    (uint16_t*) 0x0884,
-    (uint16_t*) 0x0886
+static uint16_t* Ipcx[] =
+{
+	(uint16_t*)0x0840,
+	(uint16_t*)0x0842,
+	(uint16_t*)0x0844,
+	(uint16_t*)0x0846,
+	(uint16_t*)0x0848,
+	(uint16_t*)0x084A,
+	(uint16_t*)0x084C,
+	(uint16_t*)0x084E,
+	(uint16_t*)0x0850,
+	(uint16_t*)0x0852,
+	(uint16_t*)0x0854,
+	(uint16_t*)0x0856,
+	(uint16_t*)0x0858,
+	(uint16_t*)0x085A,
+	(uint16_t*)0x085C,
+	(uint16_t*)0x085E,
+	(uint16_t*)0x0860,
+	(uint16_t*)0x0862,
+	(uint16_t*)0x0864,
+	(uint16_t*)0x0866,
+	(uint16_t*)0x0868,
+	(uint16_t*)0x086A,
+	(uint16_t*)0x086C,
+	(uint16_t*)0x086E,
+	(uint16_t*)0x0870,
+	(uint16_t*)0x0872,
+	(uint16_t*)0x0874,
+	(uint16_t*)0x0876,
+	(uint16_t*)0x0878,
+	(uint16_t*)0x087A,
+	(uint16_t*)0x087C,
+	(uint16_t*)0x087E,
+	(uint16_t*)0x0880,
+	(uint16_t*)0x0882,
+	(uint16_t*)0x0884,
+	(uint16_t*)0x0886
 };
 
 volatile sUartPort_t sUartPorts[NBUART];
+/************************************************************/
 
-bool IsUartInterfaceValid(uint8_t ubUartNo);
-
-/*
-Init_UART
-        Initialise the UART module with no flow control
-
-        INPUT 		:
-                                ubUartNo : Uart Interface that need to be initialise
-                                sUartParam : Uart Parameters to be configure
-				
-        OUTPUT 		:
-                                -None
- */
 
 /************************************************************/
-void UartInit(uint8_t ubUartNo, sUartParam* sUartParam) {
-    uint16_t usBaudrate;
-    uint8_t ubValid = TRUE;
-    sUartInit_t* sUartInit = NULL;
+/*                  PRIVATE PROTOTYPES                      */
+/************************************************************/
+bool IsUartInterfaceValid(uint8_t ubUartNo);
+/************************************************************/
 
-    ubValid = IsUartInterfaceValid(ubUartNo);
-    if (ubValid) {
-        sUartInit = (sUartInit_t*) UartBase[ubUartNo];
-        /*Clear every UART registers*/
-        sUartInit->Uxmode = 0x0000;
-        sUartInit->Uxsta = 0x0000;
-        sUartInit->Uxrxreg = 0x0000;
-        sUartInit->Uxtxreg = 0x0000;
 
-        /*Polarity*/
-        sUartInit->Uxmode |= ((sUartParam->RxPolarity) << 4);
+/************************************************************/
+/*                  PUBLIC FUNCTIONS                        */
+/************************************************************/
+/*
+Init_UART
+	Initialise the UART module with no flow control
 
-        /*BRGH*/
-        sUartInit->Uxmode |= ((sUartParam->BRGH) << 3);
+	INPUT 		:
+				ubUartNo : Uart Interface that need to be initialise
+				sUartParam : Uart Parameters to be configure
 
-        if (sUartParam->BRGH == BRGH_LOW_SPEED) {
-            usBaudrate = (uint16_t) ((((FOSC / 2.0f) / sUartParam->BaudRate) / 16.0f) - 1.0f);
-        } else {
-            usBaudrate = (uint16_t) ((((FOSC / 2.0f) / sUartParam->BaudRate) / 4.0f) - 1.0f);
-        }
+	OUTPUT 		:
+				-None
+*/
+/************************************************************/
+void UartInit(uint8_t ubUartNo, sUartParam* sUartParam)
+{
+	uint16_t usBaudrate;
+	uint8_t ubValid = TRUE;
+	sUartInit_t* sUartInit = NULL;
 
-        /*Parity*/
-        sUartInit->Uxmode |= ((sUartParam->Parity) << 2);
+	ubValid = IsUartInterfaceValid(ubUartNo);
+	if(ubValid)
+	{
+		sUartInit = (sUartInit_t*)UartBase[ubUartNo];
+		/*Clear every UART registers*/
+		sUartInit->Uxmode 	= 	0x0000;
+		sUartInit->Uxsta 	= 	0x0000;
+		sUartInit->Uxrxreg 	= 	0x0000;
+                sUartInit->Uxtxreg 	=       0x0000;
 
-        /*Stop bits*/
-        sUartInit->Uxmode |= (sUartParam->StopBit);
+		/*Polarity*/
+		sUartInit->Uxmode |= ((sUartParam->RxPolarity)<<4);
 
-        /*Baudrate*/
-        sUartInit->Uxbrg = usBaudrate;
+		/*BRGH*/
+		sUartInit->Uxmode |= ((sUartParam->BRGH)<<3);
 
-        /*Start Uart module*/
-        sUartInit->Uxmode |= UARTEN;
-    }
+		if(sUartParam->BRGH == BRGH_LOW_SPEED)
+			{
+				usBaudrate = (uint16_t)((((FOSC/2.0f)/sUartParam->BaudRate)/16.0f)-1.0f);
+			}
+		else
+			{
+				usBaudrate = (uint16_t)((((FOSC/2.0f)/sUartParam->BaudRate)/4.0f)-1.0f);
+			}
+
+		/*Parity*/
+		sUartInit->Uxmode |= ((sUartParam->Parity)<<2);
+
+		/*Stop bits*/
+		sUartInit->Uxmode |= (sUartParam->StopBit);
+
+		/*Baudrate*/
+		sUartInit->Uxbrg = usBaudrate;
+
+		/*Start Uart module*/
+		sUartInit->Uxmode |= UARTEN;
+	}
 }
 
 /************************************************************/
 /*
 UartInitPortStruc
-        Initialise the UART structure
+	Initialise the UART structure
 
-        INPUT 		:
-                                sUartPort: UartPort structure to be initialize
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				sUartPort: UartPort structure to be initialize
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
 void UartInitPortStruc(uint8_t ubUartNo,
-        void (*pTxfct)(uint8_t ubUartNo, uint8_t ubChar),
-        void (*pRxfct)(uint8_t ubUartNo, uint8_t ubChar)) {
-    uint16_t usCounter;
-    uint8_t ubValid = FALSE;
-    uint8_t ubValidUartNo = 0xFF;
+					   void (*pTxfct)(uint8_t ubUartNo, uint8_t ubChar),
+					   void (*pRxfct)(uint8_t ubUartNo, uint8_t ubChar))
+{
+	uint16_t usCounter;
+	uint8_t ubValid = FALSE;
+	uint8_t ubValidUartNo = 0xFF;
 
-    /*Validity Check*/
-    ubValid = IsUartInterfaceValid(ubUartNo);
-    if (ubValid) {
-        ubValidUartNo = ubUartNo;
-    }
+	/*Validity Check*/
+	ubValid = IsUartInterfaceValid(ubUartNo);
+	if(ubValid)
+	{
+		ubValidUartNo = ubUartNo;
+	}
 
-    /*Initialise all parameters to 0*/
-    sUartPorts[ubValidUartNo].TxMessageLength = 0x00;
-    sUartPorts[ubValidUartNo].RxMessageLength = 0x00;
-    sUartPorts[ubValidUartNo].TxIsBusy = 0x00;
+	/*Initialise all parameters to 0*/
+	sUartPorts[ubValidUartNo].TxMessageLength = 0x00;
+	sUartPorts[ubValidUartNo].RxMessageLength = 0x00;
+	sUartPorts[ubValidUartNo].TxIsBusy = 0x00;
 
-    memset(&sUartPorts[ubValidUartNo].TxBuffer[0],0,UART_BUFFER_SIZE);
-    memset(&sUartPorts[ubValidUartNo].RxBuffer[0],0,UART_BUFFER_SIZE);
+	for(usCounter = 0; usCounter<UART_BUFFER_SIZE;usCounter++)
+	{
+		sUartPorts[ubValidUartNo].TxBuffer[usCounter] = 0x00;
+		sUartPorts[ubValidUartNo].RxBuffer[usCounter] = 0x00;
+	}
+	/*Configure callback function if necessary*/
+	if(pRxfct != NULL)
+	{
+		sUartPorts[ubValidUartNo].Rxfct = pRxfct;
+	}
+	else
+	{
+		sUartPorts[ubValidUartNo].Rxfct = NULL;
+	}
 
-    /*Configure callback function if necessary*/
-    if (pRxfct != NULL) {
-        sUartPorts[ubValidUartNo].Rxfct = pRxfct;
-    } else {
-        sUartPorts[ubValidUartNo].Rxfct = NULL;
-    }
-
-    if (pTxfct != NULL) {
-        sUartPorts[ubValidUartNo].Txfct = pTxfct;
-    } else {
-        sUartPorts[ubValidUartNo].Txfct = NULL;
-    }
+	if(pTxfct != NULL)
+	{
+		sUartPorts[ubValidUartNo].Txfct = pTxfct;
+	}
+	else
+	{
+		sUartPorts[ubValidUartNo].Txfct = NULL;
+	}
 }
 /************************************************************/
 /*
 UartEcho
-        Send the content of the receive buffer on UART tx
+	Send the content of the receive buffer on UART tx
 
-        INPUT 		:
-                                ubUartNo	: Uart number
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				ubUartNo	: Uart number
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
-void UartEcho(uint8_t ubUartNo) {
-    uint8_t ubCounter;
-    uint8_t ubValid = FALSE;
-    sUartInit_t* sUartReg = NULL;
+void UartEcho(uint8_t ubUartNo)
+{        
+	sUartInit_t* sUartReg = NULL;
 
-    if (IsUartInterfaceValid(ubUartNo) && sUartPorts[ubUartNo].RxMessageLength) {
-        sUartReg = (sUartInit_t*) UartBase[ubUartNo];
-        /*Send Rx data to Tx*/
-        UartTxFrame(ubUartNo, sUartPorts[ubUartNo].RxBuffer, sUartPorts[ubUartNo].RxMessageLength);
-        memset(sUartPorts[ubUartNo].RxBuffer, 0, sUartPorts[ubUartNo].RxMessageLength);
-    }
+	/*Validity Check*/
+        if(!IsUartInterfaceValid(ubUartNo))
+            return;
+
+
+	if(sUartPorts[ubUartNo].RxMessageLength)
+	{
+		sUartReg = (sUartInit_t*)UartBase[ubUartNo];
+		/*Send Rx data to Tx*/
+		UartTxFrame(ubUartNo, (char*)sUartPorts[ubUartNo].RxBuffer, sUartPorts[ubUartNo].RxMessageLength);
+
+		/*Clear structure informations*/
+                memset((void*)sUartPorts[ubUartNo].RxBuffer,0,sUartPorts[ubUartNo].RxMessageLength);
+		sUartPorts[ubUartNo].RxMessageLength = 0;
+	}
 }
 /************************************************************/
 /*
 UartTxFrame
-        Prepare a frame to be send
+	Prepare a frame to be send
 
-        INPUT 		:
-                                ubUartNo	: Uart number
-                                ubString	: Char array
-                                ubLength	: Number of bit in the char array(ubString)
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				ubUartNo	: Uart number
+				ubString	: Char array
+				ubLength	: Number of bit in the char array(ubString)
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
-void UartTxFrame(uint8_t ubUartNo, char* ubString, size_t ubLength) {
+void UartTxFrame(uint8_t ubUartNo, char* ubString, size_t ubLength)
+{
 
-    uint8_t ubCounter;
-    uint8_t ubValid = FALSE;
-    sUartInit_t* sUartReg = NULL;
+	uint8_t ubCounter;
+	uint8_t ubValid = FALSE;
+	sUartInit_t* sUartReg = NULL;
 
-    /*Validity Check*/
-    ubValid = IsUartInterfaceValid(ubUartNo);
-    if (ubValid && (!sUartPorts[ubValid].TxIsBusy)) {
-        sUartReg = (sUartInit_t*) UartBase[ubUartNo];
+	/*Validity Check*/
+	ubValid = IsUartInterfaceValid(ubUartNo);
+	if(ubValid && (!sUartPorts[ubValid].TxIsBusy))
+	{
+		sUartReg = (sUartInit_t*)UartBase[ubUartNo];
 
-        /*Copy the chars to the buffer*/
-        memcpy(ubString, sUartPorts[ubUartNo].TxBuffer, ubLength);
+		/*Copy the chars to the buffer*/
+		for(ubCounter = 0; ubCounter<ubLength;ubCounter++)
+		{
+			sUartPorts[ubUartNo].TxBuffer[ubCounter] = ubString[ubCounter];
+		}
+		sUartPorts[ubUartNo].TxMessageLength = ubLength;
+		sUartPorts[ubUartNo].TxLocation = 0;
 
-        sUartPorts[ubUartNo].TxMessageLength = ubLength;
-        sUartPorts[ubUartNo].TxLocation = 0;
+		/*Port is use*/
+		sUartPorts[ubUartNo].TxIsBusy = 1;
 
-        /*Port is use*/
-        sUartPorts[ubUartNo].TxIsBusy = 1;
-
-        /*Send first Char*/
-        sUartReg->Uxtxreg = sUartPorts[ubUartNo].TxBuffer[sUartPorts[ubUartNo].TxLocation];
-    }
+		/*Send first Char*/
+		sUartReg->Uxtxreg = sUartPorts[ubUartNo].TxBuffer[sUartPorts[ubUartNo].TxLocation];
+	}
 }
 /************************************************************/
 /*
 UartTxEnable
-        Enable or disable uart TX module
+	Enable or disable uart TX module
 
-        INPUT 		:
-                                ubUartNo	: Uart number
-                                bState	 	: State (disable of enable)
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				ubUartNo	: Uart number
+				bState	 	: State (disable of enable)
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
-void UartTxEnable(uint8_t ubUartNo, bool bState) {
-    uint8_t ubValid = TRUE;
-    sUartInit_t* sUartReg = NULL;
+void UartTxEnable(uint8_t ubUartNo, bool bState)
+{
+	uint8_t ubValid = TRUE;
+	sUartInit_t* sUartReg= NULL;
 
-    ubValid = IsUartInterfaceValid(ubUartNo);
-    if (ubValid) {
-        sUartReg = (sUartInit_t*) UartBase[ubUartNo];
-        if (bState == TRUE) {
-            sUartReg->Uxsta |= UTXEN;
-        } else {
-            sUartReg->Uxsta &= ~(UTXEN);
-        }
-    }
+	ubValid = IsUartInterfaceValid(ubUartNo);
+	if(ubValid)
+	{
+		sUartReg = (sUartInit_t*)UartBase[ubUartNo];
+		if(bState==TRUE)
+		{
+			sUartReg->Uxsta |= UTXEN;
+		}
+		else
+		{
+			sUartReg->Uxsta &= ~(UTXEN);
+		}
+	}
 
 }
 /************************************************************/
 /*
 UartInterruptRxEnable
-        Enable or disable uart module
+	Enable or disable uart module
 
-        INPUT 		:
-                                ubUartNo	: Uart number
-                                usMode		: Interrupt Mode
-                                ubPriority	: Interrupt Priority
-                                bState	 	: State (disable of enable)
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				ubUartNo	: Uart number
+				usMode		: Interrupt Mode
+				ubPriority	: Interrupt Priority
+				bState	 	: State (disable of enable)
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
-void UartInterruptRxEnable(uint8_t ubUartNo, uint16_t usMode, uint8_t ubPriority, bool bState) {
-    uint8_t ubValid = TRUE;
-    sUartInit_t* sUartReg = NULL;
+void UartInterruptRxEnable(uint8_t ubUartNo, uint16_t usMode, uint8_t ubPriority, bool bState)
+{
+	uint8_t ubValid = TRUE;
+	sUartInit_t* sUartReg= NULL;
 
-    /*Validity check*/
-    ubValid = IsUartInterfaceValid(ubUartNo);
+	/*Validity check*/
+	ubValid = IsUartInterfaceValid(ubUartNo);
 
-    if (ubValid) {
-        /*Allocate the right base address*/
-        sUartReg = (sUartInit_t*) UartBase[ubUartNo];
+	if(ubValid)
+	{
+		/*Allocate the right base address*/
+		sUartReg = (sUartInit_t*)UartBase[ubUartNo];
 
-        /*Set the interrupt mode*/
-        sUartReg->Uxmode |= usMode;
+		/*Set the interrupt mode*/
+		sUartReg->Uxmode |= usMode;
 
-        if (bState == ENABLE) {
-            /*Set the interrupt priority and interrupt enable*/
-            switch (ubUartNo) {
-                case UART_1:
-                    *Ipcx[2] |= (uint16_t) ubPriority << 12;
-                    *Iecx[0] |= U1RXIE;
-                    break;
+		if(bState == ENABLE)
+		{
+			/*Set the interrupt priority and interrupt enable*/
+			switch(ubUartNo)
+			{
+				case UART_1:
+				*Ipcx[2] |= (uint16_t)ubPriority<<12;
+				*Iecx[0] |= U1RXIE;
+				break;
 
-                case UART_2:
-                    *Ipcx[7] |= (uint16_t) ubPriority << 8;
-                    *Iecx[1] |= U2RXIE;
-                    break;
+				case UART_2:
+				*Ipcx[7] |= (uint16_t)ubPriority<<8;
+				*Iecx[1] |= U2RXIE;
+				break;
 
-                case UART_3:
-                    *Ipcx[20] |= (uint16_t) ubPriority << 8;
-                    *Iecx[5] |= U3RXIE;
-                    break;
+				case UART_3:
+				*Ipcx[20] |= (uint16_t)ubPriority<<8;
+				*Iecx[5] |= U3RXIE;
+				break;
 
-                case UART_4:
-                    *Ipcx[22] |= (uint16_t) ubPriority;
-                    *Iecx[5] |= U4RXIE;
-                    break;
+				case UART_4:
+				*Ipcx[22] |= (uint16_t)ubPriority;
+				*Iecx[5] |= U4RXIE;
+				break;
 
-                default:
-                    break;
-            }
-        } else {
-            switch (ubUartNo) {
-                case UART_1:
-                    *Ipcx[2] |= (uint16_t) ubPriority << 12;
-                    *Iecx[0] &= ~U1RXIE;
-                    break;
+				default:
+				break;
+			}
+		}
+		else
+		{
+			switch(ubUartNo)
+			{
+				case UART_1:
+				*Ipcx[2] |= (uint16_t)ubPriority<<12;
+				*Iecx[0] &= ~U1RXIE;
+				break;
 
-                case UART_2:
-                    *Ipcx[7] |= (uint16_t) ubPriority << 8;
-                    *Iecx[1] &= ~U2RXIE;
-                    break;
+				case UART_2:
+				*Ipcx[7] |= (uint16_t)ubPriority<<8;
+				*Iecx[1] &= ~U2RXIE;
+				break;
 
-                case UART_3:
-                    *Ipcx[20] |= (uint16_t) ubPriority << 8;
-                    *Iecx[5] &= ~U3RXIE;
-                    break;
+				case UART_3:
+				*Ipcx[20] |= (uint16_t)ubPriority<<8;
+				*Iecx[5] &= ~U3RXIE;
+				break;
 
-                case UART_4:
-                    *Ipcx[22] |= (uint16_t) ubPriority;
-                    *Iecx[5] &= ~U4RXIE;
-                    break;
+				case UART_4:
+				*Ipcx[22] |= (uint16_t)ubPriority;
+				*Iecx[5] &= ~U4RXIE;
+				break;
 
-                default:
-                    break;
-            }
-        }
-    }
+				default:
+				break;
+			}
+		}
+	}
 }
 /************************************************************/
 /*
 UartInterruptTxEnable
-        Tx interrupt routine
+	Tx interrupt routine
 
-        INPUT 		:
-                                ubUartNo	: Uart number
-                                usMode		: Interrupt Mode
-                                ubPriority	: Interrupt Priority
-                                bState	 	: State (disable of enable)
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				ubUartNo	: Uart number
+				usMode		: Interrupt Mode
+				ubPriority	: Interrupt Priority
+				bState	 	: State (disable of enable)
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
-void UartInterruptTxEnable(uint8_t ubUartNo, uint16_t usMode, uint8_t ubPriority, bool bState) {
-    uint8_t ubValid = TRUE;
-    sUartInit_t* sUartReg = NULL;
+void UartInterruptTxEnable(uint8_t ubUartNo, uint16_t usMode, uint8_t ubPriority, bool bState)
+{
+	uint8_t ubValid = TRUE;
+	sUartInit_t* sUartReg= NULL;
 
-    /*Validity check*/
-    ubValid = IsUartInterfaceValid(ubUartNo);
+	/*Validity check*/
+	ubValid = IsUartInterfaceValid(ubUartNo);
 
-    if (ubValid) {
-        /*Allocate the right base address*/
-        sUartReg = (sUartInit_t*) UartBase[ubUartNo];
+	if(ubValid)
+	{
+		/*Allocate the right base address*/
+		sUartReg = (sUartInit_t*)UartBase[ubUartNo];
 
-        /*Set the interrupt mode*/
-        sUartReg->Uxmode |= usMode;
+		/*Set the interrupt mode*/
+		sUartReg->Uxmode |= usMode;
 
-        if (bState == ENABLE) {
-            /*Set the interrupt priority and interrupt enable*/
-            switch (ubUartNo) {
-                case UART_1:
-                    *Ipcx[3] |= (uint16_t) ubPriority;
-                    *Iecx[0] |= U1TXIE;
-                    break;
+		if(bState == ENABLE)
+		{
+			/*Set the interrupt priority and interrupt enable*/
+			switch(ubUartNo)
+			{
+				case UART_1:
+				*Ipcx[3] |= (uint16_t)ubPriority;
+				*Iecx[0] |= U1TXIE;
+				break;
 
-                case UART_2:
-                    *Ipcx[7] |= (uint16_t) ubPriority << 12;
-                    *Iecx[1] |= U2TXIE;
-                    break;
+				case UART_2:
+				*Ipcx[7] |= (uint16_t)ubPriority<<12;
+				*Iecx[1] |= U2TXIE;
+				break;
 
-                case UART_3:
-                    *Ipcx[20] |= (uint16_t) ubPriority << 12;
-                    *Iecx[5] |= U3TXIE;
-                    break;
+				case UART_3:
+				*Ipcx[20] |= (uint16_t)ubPriority<<12;
+				*Iecx[5] |= U3TXIE;
+				break;
 
-                case UART_4:
-                    *Ipcx[22] |= (uint16_t) ubPriority << 4;
-                    *Iecx[5] |= U4TXIE;
-                    break;
+				case UART_4:
+				*Ipcx[22] |= (uint16_t)ubPriority<<4;
+				*Iecx[5] |= U4TXIE;
+				break;
 
-                default:
-                    break;
-            }
-        } else {
-            switch (ubUartNo) {
-                case UART_1:
-                    *Ipcx[3] |= (uint16_t) ubPriority;
-                    *Iecx[0] &= ~U1TXIE;
-                    break;
+				default:
+				break;
+			}
+		}
+		else
+		{
+			switch(ubUartNo)
+			{
+				case UART_1:
+				*Ipcx[3] |= (uint16_t)ubPriority;
+				*Iecx[0] &= ~U1TXIE;
+				break;
 
-                case UART_2:
-                    *Ipcx[7] |= (uint16_t) ubPriority << 12;
-                    *Iecx[1] &= ~U2TXIE;
-                    break;
+				case UART_2:
+				*Ipcx[7] |= (uint16_t)ubPriority<<12;
+				*Iecx[1] &= ~U2TXIE;
+				break;
 
-                case UART_3:
-                    *Ipcx[20] |= (uint16_t) ubPriority << 12;
-                    *Iecx[5] &= ~U3TXIE;
-                    break;
+				case UART_3:
+				*Ipcx[20] |= (uint16_t)ubPriority<<12;
+				*Iecx[5] &= ~U3TXIE;
+				break;
 
-                case UART_4:
-                    *Ipcx[22] |= (uint16_t) ubPriority << 4;
-                    *Iecx[5] &= ~U4TXIE;
-                    break;
+				case UART_4:
+				*Ipcx[22] |= (uint16_t)ubPriority<<4;
+				*Iecx[5] &= ~U4TXIE;
+				break;
 
-                default:
-                    break;
-            }
-        }
-    }
+				default:
+				break;
+			}
+		}
+	}
 }
 /************************************************************/
 /*
 UartInterruptTx
-        Enable or disable uart module
+	Enable or disable uart module
 
-        INPUT 		:
-                                ubUartNo	: Uart number
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				ubUartNo	: Uart number
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
-void UartInterruptTx(uint8_t ubUartNo) {
-    uint8_t ubCounter;
+void UartInterruptTx(uint8_t ubUartNo)
+{
+	uint8_t ubCounter;
 
-    sUartInit_t* sUartReg = NULL;
-    sUartReg = (sUartInit_t*) UartBase[ubUartNo];
+	sUartInit_t* sUartReg = NULL;
+	sUartReg = (sUartInit_t*)UartBase[ubUartNo];
 
-    /*Increment Loction in the buffer*/
-    sUartPorts[ubUartNo].TxLocation++;
+	/*Increment Loction in the buffer*/
+	sUartPorts[ubUartNo].TxLocation++;
 
-    /*Check if the transmit buffer is empty*/
-    while (!(sUartReg->Uxsta & TRMT));
+	/*Check if the transmit buffer is empty*/
+	while(!(sUartReg->Uxsta & TRMT));
 
-    while (sUartPorts[ubUartNo].TxLocation != sUartPorts[ubUartNo].TxMessageLength) {
-        /*Send Char to transmit buffer*/
-        sUartReg->Uxtxreg = sUartPorts[ubUartNo].TxBuffer[sUartPorts[ubUartNo].TxLocation++];
+	while(sUartPorts[ubUartNo].TxLocation != sUartPorts[ubUartNo].TxMessageLength)
+	{
+		/*Send Char to transmit buffer*/
+		sUartReg->Uxtxreg = sUartPorts[ubUartNo].TxBuffer[sUartPorts[ubUartNo].TxLocation++];
 
-        /*Check if the transmit buffer is empty*/
-        while (!(sUartReg->Uxsta & TRMT));
-    }
+		/*Check if the transmit buffer is empty*/
+		while(!(sUartReg->Uxsta & TRMT));
+	}
 
-    /*Clear structure informations*/
-    memset(sUartPorts[ubUartNo].TxBuffer,0,sUartPorts[ubUartNo].TxMessageLength);
+	/*Clear structure informations*/
+	for(ubCounter=0;ubCounter<sUartPorts[ubUartNo].TxMessageLength;ubCounter++)
+	{
+		sUartPorts[ubUartNo].TxBuffer[ubCounter] = 0;
+	}
 
-    sUartPorts[ubUartNo].TxLocation = 0;
-    sUartPorts[ubUartNo].TxIsBusy = 0;
-    sUartPorts[ubUartNo].TxMessageLength = 0;
+	sUartPorts[ubUartNo].TxLocation = 0;
+	sUartPorts[ubUartNo].TxIsBusy = 0;
+	sUartPorts[ubUartNo].TxMessageLength = 0;
 
 }
 /************************************************************/
 /*
 UartInterruptRx
-        Enable or disable uart module
+	Enable or disable uart module
 
-        INPUT 		:
-                                ubUartNo	: Uart number
-        OUTPUT 		:
-                                -None
- */
-
+	INPUT 		:
+				ubUartNo	: Uart number
+	OUTPUT 		:
+				-None
+*/
 /************************************************************/
-void UartInterruptRx(uint8_t ubUartNo) {
-    sUartInit_t* sUartReg = NULL;
-    sUartReg = (sUartInit_t*) UartBase[ubUartNo];
+void UartInterruptRx(uint8_t ubUartNo)
+{
+	sUartInit_t* sUartReg = NULL;
+	sUartReg = (sUartInit_t*)UartBase[ubUartNo];
 
-    /*Check if there's something in the input buffer*/
-    if (sUartReg->Uxsta & URXDA) {
-        /*Insert Char to receive buffer*/
-        sUartPorts[ubUartNo].RxBuffer[sUartPorts[ubUartNo].RxMessageLength++] = sUartReg->Uxrxreg;
-    }
+	/*Check if there's something in the input buffer*/
+	if(sUartReg->Uxsta & URXDA)
+	{
+		/*Insert Char to receive buffer*/
+		sUartPorts[ubUartNo].RxBuffer[sUartPorts[ubUartNo].RxMessageLength++] = sUartReg->Uxrxreg;
+	}
+        UartEcho(ubUartNo);
 }
 /************************************************************/
 /*				    PRIVATES FUNCTIONS			 			*/
-
 /************************************************************/
-bool IsUartInterfaceValid(uint8_t ubUartNo) {
-    uint8_t ubValid = FALSE;
+bool IsUartInterfaceValid(uint8_t ubUartNo)
+{
+	uint8_t ubValid = FALSE;
 
-    if (ubUartNo < NBUART) {
-        ubValid = TRUE;
-    }
+	if(ubUartNo < NBUART)
+	{
+		ubValid = TRUE;
+	}
 
-    return ubValid;
+	return ubValid;
 }
 /************************************************************/
 
 /************************************************************/
 /*                  INTERRUPT FUNCTIONS                     */
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U1TXInterrupt(void) {
-    UartInterruptTx(UART_1);
-    *Ifsx[0] &= ~(U1TXIF); // clear TX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U1TXInterrupt(void)
+{
+	UartInterruptTx(UART_1);
+	*Ifsx[0] &= ~(U1TXIF); // clear TX interrupt flag
 }
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U1RXInterrupt(void) {
-    UartInterruptRx(UART_1);
-    *Ifsx[0] &= ~(U1RXIF); // clear RX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U1RXInterrupt(void)
+{
+	UartInterruptRx(UART_1);
+	*Ifsx[0] &= ~(U1RXIF); // clear RX interrupt flag
 }
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U2TXInterrupt(void) {
-    UartInterruptTx(UART_2);
-    *Ifsx[1] &= ~(U2TXIF); // clear TX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U2TXInterrupt(void)
+{
+	UartInterruptTx(UART_2);
+	*Ifsx[1] &= ~(U2TXIF); // clear TX interrupt flag
 }
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U2RXInterrupt(void) {
-    UartInterruptRx(UART_2);
-    *Ifsx[1] &= ~(U2RXIF); // clear TX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U2RXInterrupt(void)
+{
+	UartInterruptRx(UART_2);
+	*Ifsx[1] &= ~(U2RXIF); // clear TX interrupt flag
 }
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U3TXInterrupt(void) {
-    *Ifsx[5] &= ~(U3TXIF); // clear TX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U3TXInterrupt(void)
+{
+	*Ifsx[5] &= ~(U3TXIF); // clear TX interrupt flag
 }
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U3RXInterrupt(void) {
-    *Ifsx[5] &= ~(U3RXIF); // clear TX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U3RXInterrupt(void)
+{
+	*Ifsx[5] &= ~(U3RXIF); // clear TX interrupt flag
 }
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U4TXInterrupt(void) {
-    *Ifsx[5] &= ~(U4TXIF); // clear TX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U4TXInterrupt(void)
+{
+	*Ifsx[5] &= ~(U4TXIF); // clear TX interrupt flag
 }
-
 /************************************************************/
-void __attribute__((interrupt, auto_psv)) _U4RXInterrupt(void) {
-    *Ifsx[5] &= ~(U4RXIF); // clear TX interrupt flag
+void __attribute__((interrupt, auto_psv)) _U4RXInterrupt(void)
+{
+	*Ifsx[5] &= ~(U4RXIF); // clear TX interrupt flag
 }

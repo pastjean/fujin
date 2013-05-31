@@ -9,11 +9,11 @@
 #define DS1338_SECONDS_REG 0x00
 #define DS1338_MINUTES_REG 0x01
 #define DS1338_HOURS_REG   0x02
-#define DS1338_DAY_REG     0x03
-#define DS1338_DATE_REG    0x04
-#define DS1338_MONTH_REG   0x05
-#define DS1338_YEAR_REG    0x06
-#define DS1338_CONTROL_REG 0x07
+#define DS1338_DAYS_REG     0x03
+#define DS1338_DATES_REG    0x04
+#define DS1338_MONTHS_REG   0x05
+#define DS1338_YEARS_REG    0x06
+#define DS1338_CONTROLS_REG 0x07
 
 typedef struct ds1338_seconds {
     union {
@@ -46,17 +46,20 @@ typedef struct ds1338_minutes {
 typedef struct ds1338_hours {
     union {
         struct {
-            unsigned hour:4;
-            unsigned :1;
-            unsigned AMPM:1;
+            unsigned hourl:4;
+            unsigned hourh10:1;
+            unsigned hourh20:1;
             unsigned clockMode:1;
-            unsigned : 1;
+            unsigned :1;
         };
 
         struct {
-            unsigned :4;
-            unsigned tenhour:1;
-            unsigned twentyhour:1;
+            unsigned hours24:6;
+            unsigned :2;
+        };
+        struct {
+            unsigned hours12:5;
+            unsigned AMPM:1;
             unsigned :2;
         };
     };
@@ -146,4 +149,39 @@ typedef struct ds1338_control {
 
 void ds1338_init(ds1338_s* ds1338, int i2c_port) {
     ds1338->port = i2c_port;
+}
+
+void ds1338_setDate(ds1338_s ds1338, uint8_t year,
+                                     uint8_t month,
+                                     uint8_t date){
+    ds1338_date d;
+    ds1338_month m;
+    ds1338_year y;
+
+    d.date=date   & 0x3F;
+    m.month=month & 0x1F;
+    y.year=year   & 0xFF;
+
+//    I2C_Send(DS1338_WRITE,DS1338_YEARS_REG, y, ds1338->port);
+//    I2C_Send(DS1338_WRITE,DS1338_MONTHS_REG, m, ds1338->port);
+//    I2C_Send(DS1338_WRITE,DS1338_DATES_REG, d, ds1338->port);
+}
+void ds1338_setClock(ds1338_s ds1338, uint8_t hours,
+                                      uint8_t minutes,
+                                      uint8_t seconds){
+    ds1338_seconds s;
+    ds1338_minutes m;
+    ds1338_hours h;
+
+    s.seconds=seconds;
+    s.ch=0;
+
+    m.minutes=minutes & 0x7F;
+
+    h.hours24 = hours & 0x3F;
+    h.clockMode = 1;
+    
+//    I2C_Send(DS1338_WRITE,DS1338_HOURS_REG ,h, ds1338->port);
+//    I2C_Send(DS1338_WRITE,DS1338_MINUTES_REG ,m, ds1338->port);
+//    I2C_Send(DS1338_WRITE,DS1338_SECONDS_REG ,s, ds1338->port);
 }

@@ -77,33 +77,34 @@ void fujin_init_io(){
 
 
 uint8_t uart_buf[80];
-
+        sUartParam usbSerialParams={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
+        sUartParam xbeeParams     ={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
 void fujin_init_uart(){
 #if ENABLE_UART == TRUE
-        sUartParam ubParam={BRGH_HIGH_SPEED,0,UART_8BITS_NOPARITY,UART_1STOP_BIT,UART_9600BAUD};
 
-    #if ENABLE_XBEE == TRUE
-        UartInit(UART_1,&ubParam);
-	UartTxEnable(UART_1, ENABLE);
-	UartInitPortStruc(UART_1, NULL,NULL);
-	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
-	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
-	UartTxFrame(UART_1, "Notus Started \n", 15);
-        fujin.has_xbee=true;
-    #else
-        fujin.has_xbee=false;
-    #endif
     #if ENABLE_USBSERIAL == TRUE
-        UartInit(UART_2,&ubParam);
+        UartInit(UART_2,&usbSerialParams);
 	UartTxEnable(UART_2, ENABLE);
 	UartInitPortStruc(UART_2, NULL,NULL);
 	UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
-	//UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
-	UartTxFrame(UART_2, "Notus Started \n", 15);
+	UartInterruptRxEnable(UART_2, CHAR_RECEIVE,3,ENABLE);
+	UartTxFrame(UART_2, "Notus Started \n\r", 16);
         fujin.has_usbserial=true;
     #else
         fujin.has_usbserial=false;
     #endif
+    #if ENABLE_XBEE == TRUE
+        UartInit(UART_1,&xbeeParams);
+	UartTxEnable(UART_1, ENABLE);
+	UartInitPortStruc(UART_1, NULL,NULL);
+	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
+	UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
+	UartTxFrame(UART_1, "Notus Started \n\r", 16);
+        fujin.has_xbee=true;
+    #else
+        fujin.has_xbee=false;
+    #endif
+
     fujin.has_uart=true;
 #else
     fujin.has_uart=false;
@@ -112,6 +113,7 @@ void fujin_init_uart(){
 
 void fujin_init_i2c(){
 #if ENABLE_I2C == TRUE
+    I2C_InterruptEnable(I2C_1,5,DISABLE);
     I2C_Init(I2C_1,100000.0f);
     fujin.has_i2c=true;
 #else
