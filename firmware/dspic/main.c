@@ -3,7 +3,6 @@
 #include "lib/chinookpack.h"
 #include <stdio.h>
 #include <string.h>
-#include "lib/skadi/skadi.h"
 
 // Device Configurations registers
 _FOSCSEL(FNOSC_FRCPLL); // select fast internal rc with pll
@@ -34,6 +33,13 @@ char can_buf[8];
 chinookpack_fbuffer fbuf;
 chinookpack_packer pk;
 
+void tst(Skadi* skadi, SkadiArgs args){LATBbits.LATB14 ^=1;}
+
+SkadiCommand skadiCommandTable[] = {
+  {"test", tst, 0, "test test test test test"}
+};
+  
+
 int main(void) {
 
     fujin_init_board();
@@ -57,7 +63,8 @@ int main(void) {
 
     // TODO: Read Eeprom Parameters
     //       and and set settings
-
+    skadi_init(&fujin.skadi, skadiCommandTable,sizeof(skadiCommandTable)/sizeof(SkadiCommand));
+    
     while(1){
 
         // 1. Read Current and SHUT DOWN RELAY if overloading
@@ -101,6 +108,8 @@ int main(void) {
 
         #endif
 
+
+        // skadi_process_command(&fujin.skadi, "cmdline :)");
         // 4. UART Processing
         #if ENABLE_UART == TRUE
         // 4.1 XBEE Processing

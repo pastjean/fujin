@@ -16,6 +16,10 @@
 
 #include "chinook.h"
 
+// Command library
+#include "lib/skadi/skadi.h"
+
+
 #define FUJIN_OK                0
 #define FUJIN_ERR               -1
 
@@ -40,7 +44,8 @@ typedef struct{
     ltc4151_s ltc4151_state;
 
     // Variable Chinook present STATE
-    chinook_s chinook;  
+    chinook_s chinook;
+    Skadi skadi;
 
 } Fujin_s;
 
