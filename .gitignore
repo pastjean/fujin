@@ -1,3 +1,2 @@
 .DS_Store
-hardware/dspic/build/
-hardware/dspic/dist/
+firmware/dspic/dist/
