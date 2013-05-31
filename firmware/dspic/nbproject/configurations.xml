@@ -47,6 +47,11 @@
           <itemPath>lib/rtc/ds1338.c</itemPath>
           <itemPath>lib/rtc/ds1338.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="skadi" displayName="skadi" projectFiles="true">
+          <itemPath>lib/skadi/skadi.c</itemPath>
+          <itemPath>lib/skadi/skadi.h</itemPath>
+          <itemPath>lib/skadi/version.h</itemPath>
+        </logicalFolder>
         <itemPath>lib/chinookpack.h</itemPath>
         <itemPath>lib/chinookpack_unpack.c</itemPath>
       </logicalFolder>
