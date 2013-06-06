@@ -136,6 +136,7 @@ typedef struct UartPort
 	uint8_t	TxIsBusy;
 	void	(*Txfct)(uint8_t ubUartNo, uint8_t ubChar);
 	void	(*Rxfct)(uint8_t ubUartNo, uint8_t ubChar);
+        void	(*RxLineEvt)(const char*, size_t);
 }sUartPort_t;
 
 typedef struct UartInit
@@ -159,6 +160,8 @@ void UartInitPortStruc(uint8_t ubUartNo,
 					   void (*Txfct)(uint8_t ubUartNo, uint8_t ubChar),
 					   void (*Rxfct)(uint8_t ubUartNo, uint8_t ubChar));
 void UartEcho(uint8_t ubUartNo);
+void UartClear(uint8_t ubUartNo);
+
 void UartTxFrame(uint8_t ubUartNo, char* ubString,size_t ubLength);
 
 void UartTxEnable(uint8_t ubUartNo, bool state);
@@ -167,6 +170,8 @@ void UartInterruptTxEnable(uint8_t ubUartNo, uint16_t usMode, uint8_t ubPriority
 
 void UartInterruptTx(uint8_t ubUartNo);
 void UartInterruptRx(uint8_t ubUartNo);
+
+void UartSetRXLineEvt(uint8_t ubUartNo,void (*evt)(const char*, size_t));
 /************************************************************/
 
 

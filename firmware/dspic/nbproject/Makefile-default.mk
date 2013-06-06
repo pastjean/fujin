@@ -45,11 +45,11 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/lib/currentmonitor/ltc4151.o ${OBJECTDIR}/lib/dspic/can/can.o ${OBJECTDIR}/lib/dspic/dma/dma.o ${OBJECTDIR}/lib/dspic/i2c/i2c.o ${OBJECTDIR}/lib/dspic/timer/timer.o ${OBJECTDIR}/lib/dspic/uart/uart.o ${OBJECTDIR}/lib/eeprom/cat24c256w.o ${OBJECTDIR}/lib/rtc/ds1338.o ${OBJECTDIR}/lib/chinookpack_unpack.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/main.o ${OBJECTDIR}/lib/skadi/skadi.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d ${OBJECTDIR}/lib/dspic/can/can.o.d ${OBJECTDIR}/lib/dspic/dma/dma.o.d ${OBJECTDIR}/lib/dspic/i2c/i2c.o.d ${OBJECTDIR}/lib/dspic/timer/timer.o.d ${OBJECTDIR}/lib/dspic/uart/uart.o.d ${OBJECTDIR}/lib/eeprom/cat24c256w.o.d ${OBJECTDIR}/lib/rtc/ds1338.o.d ${OBJECTDIR}/lib/chinookpack_unpack.o.d ${OBJECTDIR}/fujin.o.d ${OBJECTDIR}/main.o.d ${OBJECTDIR}/lib/skadi/skadi.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/lib/currentmonitor/ltc4151.o ${OBJECTDIR}/lib/dspic/can/can.o ${OBJECTDIR}/lib/dspic/dma/dma.o ${OBJECTDIR}/lib/dspic/i2c/i2c.o ${OBJECTDIR}/lib/dspic/timer/timer.o ${OBJECTDIR}/lib/dspic/uart/uart.o ${OBJECTDIR}/lib/eeprom/cat24c256w.o ${OBJECTDIR}/lib/rtc/ds1338.o ${OBJECTDIR}/lib/skadi/skadi.o ${OBJECTDIR}/lib/chinookpack_unpack.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/main.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/lib/currentmonitor/ltc4151.o.d ${OBJECTDIR}/lib/dspic/can/can.o.d ${OBJECTDIR}/lib/dspic/dma/dma.o.d ${OBJECTDIR}/lib/dspic/i2c/i2c.o.d ${OBJECTDIR}/lib/dspic/timer/timer.o.d ${OBJECTDIR}/lib/dspic/uart/uart.o.d ${OBJECTDIR}/lib/eeprom/cat24c256w.o.d ${OBJECTDIR}/lib/rtc/ds1338.o.d ${OBJECTDIR}/lib/skadi/skadi.o.d ${OBJECTDIR}/lib/chinookpack_unpack.o.d ${OBJECTDIR}/fujin.o.d ${OBJECTDIR}/main.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/lib/currentmonitor/ltc4151.o ${OBJECTDIR}/lib/dspic/can/can.o ${OBJECTDIR}/lib/dspic/dma/dma.o ${OBJECTDIR}/lib/dspic/i2c/i2c.o ${OBJECTDIR}/lib/dspic/timer/timer.o ${OBJECTDIR}/lib/dspic/uart/uart.o ${OBJECTDIR}/lib/eeprom/cat24c256w.o ${OBJECTDIR}/lib/rtc/ds1338.o ${OBJECTDIR}/lib/chinookpack_unpack.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/main.o ${OBJECTDIR}/lib/skadi/skadi.o
+OBJECTFILES=${OBJECTDIR}/lib/currentmonitor/ltc4151.o ${OBJECTDIR}/lib/dspic/can/can.o ${OBJECTDIR}/lib/dspic/dma/dma.o ${OBJECTDIR}/lib/dspic/i2c/i2c.o ${OBJECTDIR}/lib/dspic/timer/timer.o ${OBJECTDIR}/lib/dspic/uart/uart.o ${OBJECTDIR}/lib/eeprom/cat24c256w.o ${OBJECTDIR}/lib/rtc/ds1338.o ${OBJECTDIR}/lib/skadi/skadi.o ${OBJECTDIR}/lib/chinookpack_unpack.o ${OBJECTDIR}/fujin.o ${OBJECTDIR}/main.o
 
 
 CFLAGS=
@@ -121,6 +121,12 @@ ${OBJECTDIR}/lib/rtc/ds1338.o: lib/rtc/ds1338.c  nbproject/Makefile-${CND_CONF}.
 	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/rtc/ds1338.c  -o ${OBJECTDIR}/lib/rtc/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/rtc/ds1338.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/lib/rtc/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/lib/skadi/skadi.o: lib/skadi/skadi.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/skadi 
+	@${RM} ${OBJECTDIR}/lib/skadi/skadi.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/skadi/skadi.c  -o ${OBJECTDIR}/lib/skadi/skadi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/skadi/skadi.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/lib/skadi/skadi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 ${OBJECTDIR}/lib/chinookpack_unpack.o: lib/chinookpack_unpack.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/lib 
 	@${RM} ${OBJECTDIR}/lib/chinookpack_unpack.o.d 
@@ -138,12 +144,6 @@ ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/main.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/lib/skadi/skadi.o: lib/skadi/skadi.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/lib/skadi 
-	@${RM} ${OBJECTDIR}/lib/skadi/skadi.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/skadi/skadi.c  -o ${OBJECTDIR}/lib/skadi/skadi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/skadi/skadi.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1  -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
-	@${FIXDEPS} "${OBJECTDIR}/lib/skadi/skadi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 else
 ${OBJECTDIR}/lib/currentmonitor/ltc4151.o: lib/currentmonitor/ltc4151.c  nbproject/Makefile-${CND_CONF}.mk
@@ -194,6 +194,12 @@ ${OBJECTDIR}/lib/rtc/ds1338.o: lib/rtc/ds1338.c  nbproject/Makefile-${CND_CONF}.
 	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/rtc/ds1338.c  -o ${OBJECTDIR}/lib/rtc/ds1338.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/rtc/ds1338.o.d"      -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/lib/rtc/ds1338.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
+${OBJECTDIR}/lib/skadi/skadi.o: lib/skadi/skadi.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/lib/skadi 
+	@${RM} ${OBJECTDIR}/lib/skadi/skadi.o.d 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/skadi/skadi.c  -o ${OBJECTDIR}/lib/skadi/skadi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/skadi/skadi.o.d"      -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
+	@${FIXDEPS} "${OBJECTDIR}/lib/skadi/skadi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
+	
 ${OBJECTDIR}/lib/chinookpack_unpack.o: lib/chinookpack_unpack.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/lib 
 	@${RM} ${OBJECTDIR}/lib/chinookpack_unpack.o.d 
@@ -211,12 +217,6 @@ ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/main.o.d 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"      -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
-	
-${OBJECTDIR}/lib/skadi/skadi.o: lib/skadi/skadi.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/lib/skadi 
-	@${RM} ${OBJECTDIR}/lib/skadi/skadi.o.d 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  lib/skadi/skadi.c  -o ${OBJECTDIR}/lib/skadi/skadi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/lib/skadi/skadi.o.d"      -g -omf=elf -O0 -msmart-io=1 -Wall -msfr-warn=off
-	@${FIXDEPS} "${OBJECTDIR}/lib/skadi/skadi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
 

@@ -69,9 +69,8 @@ Peripheral mapping
   - RB14 (cantx)
   - RB15 (relay)
 
-I2C ADDRESS
+Hardware Errors
 -----------
 
-- EEPROM        : 1010000
-- RTC           : 1101111
-- Power Monitor : 1101000
+- USB P on - and N on + (they should have same nomenclature so its less strange)
+- Current monitor powered from Vbatin -> I2C doesnt work when on USB should be  from +5v or +3v3

@@ -38,19 +38,29 @@ void tst(Skadi* skadi, SkadiArgs args){LATBbits.LATB14 ^=1;}
 SkadiCommand skadiCommandTable[] = {
   {"test", tst, 0, "test test test test test"}
 };
-  
+
+uint8_t uartline_rcv_new;
+char uartline_rcv[256];
+
+void uartReceiveLineEvt(const char* line,size_t s){
+    uartline_rcv_new=1;
+    memcpy(uartline_rcv,line,s);
+    uartline_rcv[s]= '\0';
+}
 
 int main(void) {
 
     fujin_init_board();
 
     // CAN PREPARATION
+#if ENABLE_CAN == TRUE
     config_CAN_Tx_msg(&can_msg_current, CAN_MSG_VOLTAGE_MONITOR_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_voltage, CAN_MSG_CURRENT_MONITOR_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_clock,   CAN_MSG_TIME_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_pitch,   CAN_MSG_PITCH_AUTO_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_gear,    CAN_MSG_GEAR_FUJIN_SID , STANDARD_ID, 3);
-
+#endif
+    
     // Initialize everything
     clear_buf(can_buf,8);
     chinookpack_fbuffer_init(&fbuf,can_buf,8);
@@ -63,6 +73,8 @@ int main(void) {
 
     // TODO: Read Eeprom Parameters
     //       and and set settings
+    UartSetRXLineEvt(UART_1,uartReceiveLineEvt);
+    UartSetRXLineEvt(UART_2,uartReceiveLineEvt);
     skadi_init(&fujin.skadi, skadiCommandTable,sizeof(skadiCommandTable)/sizeof(SkadiCommand));
     
     while(1){
@@ -115,16 +127,17 @@ int main(void) {
         // 4.1 XBEE Processing
         #if ENABLE_XBEE == TRUE
 // TODO: Si en listen mode send DATA
+
         #endif
         // 4.2 USB-Serial Processing
         #if ENABLE_USBSERIAL == TRUE
+        if(uartline_rcv_new){
+            skadi_process_command(&fujin.skadi,uartline_rcv);
+            uartline_rcv_new=0;
+        }
         #endif
         #endif
 
-        if(print==1){
-            print=0;
-            LATBbits.LATB14 ^= 1;
-        }
     }
 
     // Should never go there

@@ -223,6 +223,15 @@ void UartInitPortStruc(uint8_t ubUartNo,
 		sUartPorts[ubValidUartNo].Txfct = NULL;
 	}
 }
+
+void UartSetRXLineEvt(uint8_t ubUartNo,void (*evt)(const char*, size_t)){
+    if(!IsUartInterfaceValid(ubUartNo))
+      return;
+
+    sUartPort_t port = sUartPorts[ubUartNo];
+
+    port.RxLineEvt=evt;
+}
 /************************************************************/
 /*
 UartEcho
@@ -242,17 +251,32 @@ void UartEcho(uint8_t ubUartNo)
         if(!IsUartInterfaceValid(ubUartNo))
             return;
 
+        sUartPort_t port = sUartPorts[ubUartNo];
 
-	if(sUartPorts[ubUartNo].RxMessageLength)
+	if(port.RxMessageLength)
 	{
 		sUartReg = (sUartInit_t*)UartBase[ubUartNo];
 		/*Send Rx data to Tx*/
-		UartTxFrame(ubUartNo, (char*)sUartPorts[ubUartNo].RxBuffer, sUartPorts[ubUartNo].RxMessageLength);
+		UartTxFrame(ubUartNo, (char*)port.RxBuffer, port.RxMessageLength);
 
-		/*Clear structure informations*/
-                memset((void*)sUartPorts[ubUartNo].RxBuffer,0,sUartPorts[ubUartNo].RxMessageLength);
-		sUartPorts[ubUartNo].RxMessageLength = 0;
+                // There is a line receive event and a end of line has been received
+                if(   port.RxLineEvt!=0
+                   || port.RxLineEvt!= NULL
+                   && ((port.RxBuffer[port.RxMessageLength] == '\n')
+                       || (port.RxBuffer[port.RxMessageLength] == '\r'))){
+                    
+                    port.RxLineEvt(port.RxBuffer,port.RxMessageLength);
+                }
+                UartClear(ubUartNo);
+
 	}
+}
+void UartClear(uint8_t ubUartNo){
+    if(!IsUartInterfaceValid(ubUartNo))
+        return;
+
+    memset((void*)sUartPorts[ubUartNo].RxBuffer,0,sUartPorts[ubUartNo].RxMessageLength);
+    sUartPorts[ubUartNo].RxMessageLength = 0;
 }
 /************************************************************/
 /*
@@ -562,8 +586,10 @@ UartInterruptRx
 /************************************************************/
 void UartInterruptRx(uint8_t ubUartNo)
 {
-	sUartInit_t* sUartReg = NULL;
-	sUartReg = (sUartInit_t*)UartBase[ubUartNo];
+	sUartInit_t* sUartReg = (sUartInit_t*)UartBase[ubUartNo];
+
+        if(sUartReg == NULL)
+            return;
 
 	/*Check if there's something in the input buffer*/
 	if(sUartReg->Uxsta & URXDA)
