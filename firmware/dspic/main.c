@@ -4,19 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-int _sys_write(FILE fh, const unsigned char * buf,
-               unsigned len, int mode)
-{
-            UartTxFrame(UART_1, buf, len);
-
-    return 0;
-}
-
 // Device Configurations registers
 _FOSCSEL(FNOSC_FRCPLL); // select fast internal rc with pll
 _FOSC(FCKSM_CSECMD & OSCIOFNC_OFF & POSCMD_XT);
 _FWDT(FWDTEN_OFF); // Watchdog timer software enabled
-
 
 
 void fujin_recv_can_msg(unsigned long ID,
