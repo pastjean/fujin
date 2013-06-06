@@ -228,9 +228,7 @@ void UartSetRXLineEvt(uint8_t ubUartNo,void (*evt)(const char*, size_t)){
     if(!IsUartInterfaceValid(ubUartNo))
       return;
 
-    sUartPort_t port = sUartPorts[ubUartNo];
-
-    port.RxLineEvt=evt;
+    sUartPorts[ubUartNo].RxLineEvt=evt;
 }
 /************************************************************/
 /*
@@ -257,17 +255,38 @@ void UartEcho(uint8_t ubUartNo)
 	{
 		sUartReg = (sUartInit_t*)UartBase[ubUartNo];
 		/*Send Rx data to Tx*/
-		UartTxFrame(ubUartNo, (char*)port.RxBuffer, port.RxMessageLength);
+                char newChar = port.RxBuffer[port.RxMessageLength-1];
 
                 // There is a line receive event and a end of line has been received
-                if(   port.RxLineEvt!=0
-                   || port.RxLineEvt!= NULL
-                   && ((port.RxBuffer[port.RxMessageLength] == '\n')
-                       || (port.RxBuffer[port.RxMessageLength] == '\r'))){
-                    
-                    port.RxLineEvt(port.RxBuffer,port.RxMessageLength);
+                switch(newChar){
+                    // On backspace clear lastcharacter from buffer and send backspace char
+                    case '\b':
+                        UartTxFrame(ubUartNo, (char*)"\b \b", 3 );
+
+                        port.RxBuffer[port.RxMessageLength-1] = '\0';
+                        port.RxMessageLength -=1;
+                        break;
+                    // On line break call line break function and clear the buff
+                    case '\n':
+                    case '\r':
+                        UartTxFrame(ubUartNo, (char*)&newChar, 1);
+                        (*port.RxLineEvt)(port.RxBuffer,port.RxMessageLength);
+                        UartClear(ubUartNo);
+                        break;
+                    default:
+                        UartTxFrame(ubUartNo, (char*)&newChar, 1);
+                        break;
                 }
-                UartClear(ubUartNo);
+                if(port.RxBuffer[port.RxMessageLength-1] == '\b'){
+
+                }
+                if( ((port.RxBuffer[port.RxMessageLength-1] == '\n')
+                       || (port.RxBuffer[port.RxMessageLength-1] == '\r'))){
+                    
+                    (*port.RxLineEvt)(port.RxBuffer,port.RxMessageLength);
+                    UartClear(ubUartNo);
+                }
+                
 
 	}
 }

@@ -4,6 +4,14 @@
 #include <stdio.h>
 #include <string.h>
 
+int _sys_write(FILE fh, const unsigned char * buf,
+               unsigned len, int mode)
+{
+            UartTxFrame(UART_1, buf, len);
+
+    return 0;
+}
+
 // Device Configurations registers
 _FOSCSEL(FNOSC_FRCPLL); // select fast internal rc with pll
 _FOSC(FCKSM_CSECMD & OSCIOFNC_OFF & POSCMD_XT);
@@ -33,7 +41,7 @@ char can_buf[8];
 chinookpack_fbuffer fbuf;
 chinookpack_packer pk;
 
-void tst(Skadi* skadi, SkadiArgs args){LATBbits.LATB14 ^=1;}
+void tst(Skadi* skadi, SkadiArgs args){LATBbits.LATB13 ^=1;}
 
 SkadiCommand skadiCommandTable[] = {
   {"test", tst, 0, "test test test test test"}
@@ -44,8 +52,8 @@ char uartline_rcv[256];
 
 void uartReceiveLineEvt(const char* line,size_t s){
     uartline_rcv_new=1;
-    memcpy(uartline_rcv,line,s);
-    uartline_rcv[s]= '\0';
+    memcpy(uartline_rcv,line,s-1);
+    uartline_rcv[s-1]= '\0';
 }
 
 int main(void) {
@@ -76,7 +84,8 @@ int main(void) {
     UartSetRXLineEvt(UART_1,uartReceiveLineEvt);
     UartSetRXLineEvt(UART_2,uartReceiveLineEvt);
     skadi_init(&fujin.skadi, skadiCommandTable,sizeof(skadiCommandTable)/sizeof(SkadiCommand));
-    
+
+    skadi_process_command(&fujin.skadi,"test");
     while(1){
 
         // 1. Read Current and SHUT DOWN RELAY if overloading
