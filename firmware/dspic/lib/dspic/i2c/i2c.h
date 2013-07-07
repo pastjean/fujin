@@ -35,7 +35,7 @@
 #define I2C_2					1
 
 /*Timeout*/
-#define I2C_TIMEOUT                    0x0000FFFF
+#define I2C_TIMEOUT                    0x000FFFFF
 /************************************************************/
 
 

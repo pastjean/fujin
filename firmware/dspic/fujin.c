@@ -12,9 +12,9 @@ void fujin_init_board(){
     fujin_init_uart();
     fujin_init_can();
 
-    //fujin_init_vmon();
-    fujin_init_eeprom();
-    fujin_init_rtc();
+    fujin_init_vmon();
+    //fujin_init_eeprom();
+    //fujin_init_rtc();
 
     timer5_init(5.0);
     

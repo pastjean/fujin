@@ -52,13 +52,13 @@ int main(void) {
     fujin_init_board();
 
     // CAN PREPARATION
-#if ENABLE_CAN == TRUE
+    #if ENABLE_CAN == TRUE
     config_CAN_Tx_msg(&can_msg_current, CAN_MSG_CURRENT_MONITOR_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_voltage, CAN_MSG_VOLTAGE_MONITOR_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_clock,   CAN_MSG_TIME_SID , STANDARD_ID, 3);
     //config_CAN_Tx_msg(&can_msg_pitch,   CAN_MSG_PITCH_AUTO_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_gear,    CAN_MSG_GEAR_FUJIN_SID , STANDARD_ID, 3);
-#endif
+    #endif
     
     // Initialize everything
     clear_buf(can_buf,8);
@@ -78,17 +78,10 @@ int main(void) {
 
     skadi_process_command(&fujin.skadi,"test");
     while(1){
-
         // 1. Read Current and SHUT DOWN RELAY if overloading
         #if ENABLE_VMON == TRUE && ENABLE_I2C == TRUE
         fujin.chinook.power.v = ltc4151_read_voltage(&(fujin.ltc4151_state));
         fujin.chinook.power.i = ltc4151_read_current(&(fujin.ltc4151_state));
-        if(fujin.chinook.power.v > 13.5)
-            SWITCH_RELAY = ON;
-
-        // TODO : START A TIMER AND CHECK SAY 2 SEC LATER FOR VOLTAGE
-        if(fujin.chinook.power.v < 13.5)
-            SWITCH_RELAY = OFF;
         #endif
 
         
@@ -96,28 +89,22 @@ int main(void) {
         #if ENABLE_RTC == TRUE
         // At some interval read rtc and send time on can
         #endif
+        if(print)
+        {
+            // 3. CAN Processing
+            #if ENABLE_CAN == TRUE
+            chinookpack_pack_float(&pk,fujin.chinook.power.i);
+            send_CAN_msg(&can_msg_current, can_buf, 5);
+            while(is_CAN_msg_send(&can_msg_current) != TRUE);      // test si le message est envoyé
+            chinookpack_fbuffer_clear(&fbuf);
 
-        // 3. CAN Processing
-        #if ENABLE_CAN == TRUE
-        clear_buf(can_buf,8);
-        chinookpack_pack_float(&pk,fujin.chinook.power.i);
-        memcpy(can_msg_current_buf,can_buf,5);
-        send_CAN_msg(&can_msg_current, can_msg_current_buf, 5);
-        while(is_CAN_msg_send(&can_msg_current) != TRUE);      // test si le message est envoyé
+            chinookpack_pack_float(&pk,fujin.chinook.power.v);
+            send_CAN_msg(&can_msg_voltage, can_buf, 5);
+            while(is_CAN_msg_send(&can_msg_voltage) != TRUE);      // test si le message est envoyé
+            chinookpack_fbuffer_clear(&fbuf);
 
-        //chinookpack_pack_float(&pk,fujin.chinook.power.v);
-        chinookpack_pack_float(&pk,12.23);
-        //memcpy(can_msg_voltage_buf,can_buf,5);
-        send_CAN_msg(&can_msg_voltage, can_buf, 5);
-        while(is_CAN_msg_send(&can_msg_voltage) != TRUE);      // test si le message est envoyé
-        chinookpack_fbuffer_clear(&fbuf);
-
-                    /*chinookpack_pack_float(&pk,sSensorValues.fTurbineRPM);
-                    Set_Timeout();
-                    send_CAN_msg(&sCanMsgTurbineRPM,ubTxCanBuffer, sizeof(ubTxCanBuffer));
-                    while(!is_CAN_msg_send(&sCanMsgTurbineRPM) && !sSystemFlags.CanTimeout);
-                    Reset_Timeout();
-                    chinookpack_fbuffer_clear(&buf);*/
+            print = 0;
+        }
         // 2. Read Clock for timestamps
         #if ENABLE_RTC == TRUE
         // At some interval read rtc and send time on can

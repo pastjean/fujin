@@ -14,7 +14,7 @@
 
 void ltc4151_init(ltc4151_s* ltc4151,int i2c_port){
     ltc4151->port = i2c_port;
-    I2C_Send(LTC4151_WRITE,LTC4151_CONTROL,0b0000100,i2c_port);
+    I2C_Send(LTC4151_WRITE,LTC4151_CONTROL,0b00000000,i2c_port);
 }
 
 float ltc4151_read_voltage(ltc4151_s* ltc4151)
@@ -23,6 +23,7 @@ float ltc4151_read_voltage(ltc4151_s* ltc4151)
 	float voltage = 0.0f;
 	uint8_t data_LSB = 0;
 	uint8_t data_MSB = 0;
+        uint16_t data = 0;
 
 	/*Receive the High side and Low side (voltage value)*/
 	error = I2C_Receive(LTC4151_WRITE,
@@ -42,8 +43,8 @@ float ltc4151_read_voltage(ltc4151_s* ltc4151)
 
 	/*Scale of the sensor is 25mV/bit*/
 	/*Left justificaiton*/
-	data_LSB = ((data_LSB&0xF0)>>4) + ((data_MSB<<4)&0xF0);
-	voltage = ((float)data_LSB*0.025f);
+	data = ((data_LSB&0xF0)>>4) + (data_MSB<<4);
+	voltage = ((float)data*0.025f);
 
 	return voltage;
 }
@@ -55,6 +56,7 @@ float ltc4151_read_current(ltc4151_s* ltc4151)
 	float sense = 0.0f;
 	unsigned char data_LSB = 0;
 	unsigned char data_MSB = 0;
+        uint16_t data = 0;
 
 	/*Receive the High side and Low side (sense value)*/
 	error = I2C_Receive(LTC4151_WRITE,LTC4151_READ,LTC4151_SENSE_LSB,&data_LSB,ltc4151->port);
@@ -70,8 +72,8 @@ float ltc4151_read_current(ltc4151_s* ltc4151)
 		}
 	/*Scale of the sensor is 20uV/bit*/
 	/*Left justificaiton*/
-	data_LSB = ((data_LSB&0xF0)>>4) + ((data_MSB<<4)&0xF0);
-	sense = ((float)data_LSB*0.000020f);
+	data = ((data_LSB&0xF0)>>4) + (data_MSB<<4);
+	sense = ((float)data*0.000020f);
 	/*Sense resistor = 0.02 ohms -> I=V/R*/
 	current = sense/0.02f;
 

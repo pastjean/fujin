@@ -97,10 +97,10 @@ bool I2C_Init(uint8_t ubI2cNo,float fSpeed)
         I2cxconbits[ubI2cNo]->I2CEN=1;          //Enable
 
         /*Restart slaves in a known mode*/
-        /*I2cxconbits[ubI2cNo]->RSEN = 1;
+        I2cxconbits[ubI2cNo]->RSEN = 1;
         I2CFlag(ubI2cNo);
         I2cxconbits[ubI2cNo]->PEN = 1;//Stop
-	I2CFlag(ubI2cNo);*/
+	I2CFlag(ubI2cNo);
     }
     return ubValid;
 }
@@ -175,7 +175,7 @@ I2C_Send
 /************************************************************/
 bool I2C_Send(uint8_t ubAddress,uint8_t ubRegister,uint8_t ubData, uint8_t ubI2cNo)
 {
-	uint8_t ubValid = TRUE;
+	uint8_t ubValid = FALSE;
 
 	/*Validity check*/
 	ubValid = IsI2CInterfaceValid(ubI2cNo);
@@ -183,19 +183,19 @@ bool I2C_Send(uint8_t ubAddress,uint8_t ubRegister,uint8_t ubData, uint8_t ubI2c
 	if(ubValid)
 	{
 		I2cxconbits[ubI2cNo]->SEN=1;//Start
-		ubValid = I2CFlag(ubI2cNo);//Wait for the end of the transmission
+		I2CFlag(ubI2cNo);//Wait for the end of the transmission
 
 		*I2cxtrn[ubI2cNo]=ubAddress;//Slave Address(Write)
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 
 		*I2cxtrn[ubI2cNo]=ubRegister;//Slave Register Address
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 
 		*I2cxtrn[ubI2cNo]=ubData;//write data to selected register
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 
 		I2cxconbits[ubI2cNo]->PEN=1;//Stop
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	}
 	return ubValid;
 }
@@ -217,7 +217,7 @@ I2C_receive
 /************************************************************/
 bool I2C_Receive(uint8_t ubAddressWrite,uint8_t ubAddressRead,uint8_t ubRegister,uint8_t* ubData, uint8_t ubI2cNo)
 {
-	uint8_t ubValid = TRUE;
+	uint8_t ubValid = FALSE;
 
 	/*Validity check*/
 	ubValid = IsI2CInterfaceValid(ubI2cNo);
@@ -226,29 +226,29 @@ bool I2C_Receive(uint8_t ubAddressWrite,uint8_t ubAddressRead,uint8_t ubRegister
 	{
 	
 		I2cxconbits[ubI2cNo]->SEN=1;//Start
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	
 		*I2cxtrn[ubI2cNo]=ubAddressWrite;//Slave Address(Write)
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	
 		*I2cxtrn[ubI2cNo]= ubRegister;//Slave Register Address
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	
 		I2C1CONbits.RSEN = 1;//Restart
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	
 		*I2cxtrn[ubI2cNo]= ubAddressRead;//Slave Address(Read)
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	
 		I2cxconbits[ubI2cNo]->RCEN = 1;//Receive mode
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	
 		*ubData = *I2cxrcv[ubI2cNo];//I2C Receive buffer to unsigned char
 		I2cxconbits[ubI2cNo]->ACKEN = 1;//Enable Acknowledge
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	
 		I2cxconbits[ubI2cNo]->PEN = 1;//Stop
-		ubValid = I2CFlag(ubI2cNo);
+		I2CFlag(ubI2cNo);
 	}
 
 	return ubValid;
