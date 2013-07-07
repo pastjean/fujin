@@ -5,19 +5,13 @@
 /* MCU : dspic33E                                           */
 /*                                                          */
 /* Author : David Khouya                                    */
-/* Date	  :	26/05/2013                                  */
+/* Date	  : 26/06/2013                                      */
 /************************************************************/
 
 /************************************************************/
 /*			INCLUDES                            */
 /************************************************************/
 #include"i2c.h"
-/************************************************************/
-
-/************************************************************/
-/*                  PUBLIC VARIABLES                       */
-/************************************************************/
-uint8_t ubI2cTimeout = 0;
 /************************************************************/
 
 /************************************************************/
@@ -29,11 +23,11 @@ static I2C1CONBITS* I2cxconbits[] =
 	 (I2C1CONBITS*)&I2C2CONbits
 };
 
-//static I2C1STATBITS* I2cxstatbits[] =
-//{
-//	 (I2C1STATBITS*)&I2C1STATbits,
-//	 (I2C1STATBITS*)&I2C2STATbits
-//};
+static I2C1STATBITS* I2cxstatbits[] =
+{
+	 (I2C1STATBITS*)&I2C1STATbits,
+	 (I2C1STATBITS*)&I2C2STATbits
+};
 
 static uint16_t* I2cxbrg[] =
 {
@@ -68,12 +62,12 @@ bool IsI2CInterfaceValid(uint8_t ubI2cNo);
 /************************************************************/
 /*
 Init_I2C
-	Initialise the I2C module
+	Initialise the I2C module 
 
-	INPUT 		:
+	INPUT 		: 
                                 ubI2cNo :   Used Interface
                                 fSpeed  :   Operating Speed in Hz
-	OUTPUT 		:
+	OUTPUT 		:	
                                 bool    :   False if it failed
 
 */
@@ -103,10 +97,10 @@ bool I2C_Init(uint8_t ubI2cNo,float fSpeed)
         I2cxconbits[ubI2cNo]->I2CEN=1;          //Enable
 
         /*Restart slaves in a known mode*/
-        I2cxconbits[ubI2cNo]->RSEN = 1;
+        /*I2cxconbits[ubI2cNo]->RSEN = 1;
         I2CFlag(ubI2cNo);
         I2cxconbits[ubI2cNo]->PEN = 1;//Stop
-	I2CFlag(ubI2cNo);
+	I2CFlag(ubI2cNo);*/
     }
     return ubValid;
 }
@@ -116,11 +110,11 @@ bool I2C_Init(uint8_t ubI2cNo,float fSpeed)
 I2C_InterruptEnable
         Set the interrupt configuration for I2C module
 
-	INPUT 		:
+	INPUT 		: 
                                 ubI2cNo     :   Used Interface
                                 ubPriority  :   Interrupt priority
                                 bState      :   Interrupt State(enable or disable)
-	OUTPUT 		:
+	OUTPUT 		:	
                                 bool    :   False if it failed
 
 */
@@ -168,20 +162,20 @@ bool I2C_InterruptEnable(uint8_t ubI2cNo, uint8_t ubPriority, bool bState)
 I2C_Send
 	Send data to a slave on I2C bus
 
-	INPUT 		:
+	INPUT 		: 
 				ubAddress   : Slave address
 				ubRegister  : Slave Register
 				ubData      : Data that will be written in the register
-
-	OUTPUT 		:
+				
+	OUTPUT 		:	
 				bool        :   False if it failed
-
+				
 
 */
 /************************************************************/
 bool I2C_Send(uint8_t ubAddress,uint8_t ubRegister,uint8_t ubData, uint8_t ubI2cNo)
 {
-	uint8_t ubValid = FALSE;
+	uint8_t ubValid = TRUE;
 
 	/*Validity check*/
 	ubValid = IsI2CInterfaceValid(ubI2cNo);
@@ -189,19 +183,19 @@ bool I2C_Send(uint8_t ubAddress,uint8_t ubRegister,uint8_t ubData, uint8_t ubI2c
 	if(ubValid)
 	{
 		I2cxconbits[ubI2cNo]->SEN=1;//Start
-		I2CFlag(ubI2cNo);//Wait for the end of the transmission
+		ubValid = I2CFlag(ubI2cNo);//Wait for the end of the transmission
 
 		*I2cxtrn[ubI2cNo]=ubAddress;//Slave Address(Write)
-		I2CFlag(ubI2cNo);
+		ubValid = I2CFlag(ubI2cNo);
 
 		*I2cxtrn[ubI2cNo]=ubRegister;//Slave Register Address
-		I2CFlag(ubI2cNo);
+		ubValid = I2CFlag(ubI2cNo);
 
 		*I2cxtrn[ubI2cNo]=ubData;//write data to selected register
-		I2CFlag(ubI2cNo);
+		ubValid = I2CFlag(ubI2cNo);
 
 		I2cxconbits[ubI2cNo]->PEN=1;//Stop
-		I2CFlag(ubI2cNo);
+		ubValid = I2CFlag(ubI2cNo);
 	}
 	return ubValid;
 }
@@ -211,50 +205,50 @@ bool I2C_Send(uint8_t ubAddress,uint8_t ubRegister,uint8_t ubData, uint8_t ubI2c
 I2C_receive
 	Read data from a slave on I2C bus
 
-	INPUT 		:
+	INPUT 		: 
 				address_w 	: Slave write address
 				address_r 	: Slave read address
-				reg 		: Slave register
+				reg 		: Slave register 
 				data		: Receive buffer
-
-	OUTPUT 		:
+				
+	OUTPUT 		:	
 				bool            :   False if it failed
 */
 /************************************************************/
 bool I2C_Receive(uint8_t ubAddressWrite,uint8_t ubAddressRead,uint8_t ubRegister,uint8_t* ubData, uint8_t ubI2cNo)
 {
-	uint8_t ubValid = FALSE;
+	uint8_t ubValid = TRUE;
 
 	/*Validity check*/
 	ubValid = IsI2CInterfaceValid(ubI2cNo);
 
 	if(ubValid)
 	{
-
+	
 		I2cxconbits[ubI2cNo]->SEN=1;//Start
-		I2CFlag(ubI2cNo);
-
+		ubValid = I2CFlag(ubI2cNo);
+	
 		*I2cxtrn[ubI2cNo]=ubAddressWrite;//Slave Address(Write)
-		I2CFlag(ubI2cNo);
-
+		ubValid = I2CFlag(ubI2cNo);
+	
 		*I2cxtrn[ubI2cNo]= ubRegister;//Slave Register Address
-		I2CFlag(ubI2cNo);
-
+		ubValid = I2CFlag(ubI2cNo);
+	
 		I2C1CONbits.RSEN = 1;//Restart
-		I2CFlag(ubI2cNo);
-
+		ubValid = I2CFlag(ubI2cNo);
+	
 		*I2cxtrn[ubI2cNo]= ubAddressRead;//Slave Address(Read)
-		I2CFlag(ubI2cNo);
-
+		ubValid = I2CFlag(ubI2cNo);
+	
 		I2cxconbits[ubI2cNo]->RCEN = 1;//Receive mode
-		I2CFlag(ubI2cNo);
-
+		ubValid = I2CFlag(ubI2cNo);
+	
 		*ubData = *I2cxrcv[ubI2cNo];//I2C Receive buffer to unsigned char
 		I2cxconbits[ubI2cNo]->ACKEN = 1;//Enable Acknowledge
-		I2CFlag(ubI2cNo);
-
+		ubValid = I2CFlag(ubI2cNo);
+	
 		I2cxconbits[ubI2cNo]->PEN = 1;//Stop
-		I2CFlag(ubI2cNo);
+		ubValid = I2CFlag(ubI2cNo);
 	}
 
 	return ubValid;
@@ -266,12 +260,12 @@ bool I2C_Receive(uint8_t ubAddressWrite,uint8_t ubAddressRead,uint8_t ubRegister
 /************************************************************/
 /*
 I2C_receive
-	Read data from a slave on I2C bus
+	Read data from a slave on I2C bus 
 
-	INPUT 		:
+	INPUT 		: 
 				-None
-
-	OUTPUT 		:
+				
+	OUTPUT 		:	
 				bool            :   False if there's a timeout
 
 */
@@ -280,24 +274,25 @@ bool I2CFlag(uint8_t ubI2cNo)
 {
     bool bValid = TRUE;
     bValid = IsI2CInterfaceValid(ubI2cNo);
-
+    uint32_t usI2CTimeout = I2C_TIMEOUT;
+    
     if(bValid)
     {
         switch(ubI2cNo)
         {
             case I2C_1:
                 /*Clear flag*/
-                while(IFS1bits.MI2C1IF == 0 || ubI2cTimeout);
+                while(IFS1bits.MI2C1IF == 0 && usI2CTimeout--);
                 break;
 
             case I2C_2:
                 /*Clear flag*/
-                while(IFS3bits.MI2C2IF == 0 || ubI2cTimeout);
+                while(IFS3bits.MI2C2IF == 0 && usI2CTimeout--);
                 break;
         }
     }
 
-    if(ubI2cTimeout)
+    if(usI2CTimeout == 0)
     {
         bValid = FALSE;
     }
@@ -310,12 +305,12 @@ bool I2CFlag(uint8_t ubI2cNo)
 /************************************************************/
 /*
 IsI2CInterfaceValid
-	Read data from a slave on I2C bus
+	Read data from a slave on I2C bus 
 
-	INPUT 		:
+	INPUT 		: 
 				-None
-
-	OUTPUT 		:
+				
+	OUTPUT 		:	
 				-TRUE if the I2C address is good, FALSE if it's not
 
 */

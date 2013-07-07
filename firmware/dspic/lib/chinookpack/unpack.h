@@ -1,7 +1,7 @@
 #ifndef chinookpack_unpack_h
 #define chinookpack_unpack_h
 
-#include "../../globaldef.h"
+#include "../sysdep.h"
 #include "object.h"
 
 typedef struct chinookpackpack_unpacked {

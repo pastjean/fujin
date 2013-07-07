@@ -12,7 +12,7 @@ void fujin_init_board(){
     fujin_init_uart();
     fujin_init_can();
 
-    fujin_init_vmon();
+    //fujin_init_vmon();
     fujin_init_eeprom();
     fujin_init_rtc();
 
@@ -68,6 +68,7 @@ void fujin_init_io(){
     //_RP118R = 0b001001; // SCK2
     
     // I2C Pins
+    CONF_SCL_PIN = OUTPUT;
     // You dont need to configure i2c pins since the i2c module configures
     // them like a big boy
 

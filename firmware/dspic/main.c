@@ -25,8 +25,8 @@ T_CAN_Tx_MSG can_msg_voltage;
 T_CAN_Tx_MSG can_msg_pitch;
 T_CAN_Tx_MSG can_msg_gear;
 
-uint8_t can_msg_current_buf[3];
-uint8_t can_msg_voltage_buf[3];
+uint8_t can_msg_current_buf[5];
+uint8_t can_msg_voltage_buf[5];
 
 char can_buf[8];
 chinookpack_fbuffer fbuf;
@@ -53,10 +53,10 @@ int main(void) {
 
     // CAN PREPARATION
 #if ENABLE_CAN == TRUE
-    config_CAN_Tx_msg(&can_msg_current, CAN_MSG_VOLTAGE_MONITOR_SID , STANDARD_ID, 3);
-    config_CAN_Tx_msg(&can_msg_voltage, CAN_MSG_CURRENT_MONITOR_SID , STANDARD_ID, 3);
+    config_CAN_Tx_msg(&can_msg_current, CAN_MSG_CURRENT_MONITOR_SID , STANDARD_ID, 3);
+    config_CAN_Tx_msg(&can_msg_voltage, CAN_MSG_VOLTAGE_MONITOR_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_clock,   CAN_MSG_TIME_SID , STANDARD_ID, 3);
-    config_CAN_Tx_msg(&can_msg_pitch,   CAN_MSG_PITCH_AUTO_SID , STANDARD_ID, 3);
+    //config_CAN_Tx_msg(&can_msg_pitch,   CAN_MSG_PITCH_AUTO_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_gear,    CAN_MSG_GEAR_FUJIN_SID , STANDARD_ID, 3);
 #endif
     
@@ -101,18 +101,23 @@ int main(void) {
         #if ENABLE_CAN == TRUE
         clear_buf(can_buf,8);
         chinookpack_pack_float(&pk,fujin.chinook.power.i);
-        memcpy(can_msg_current_buf,can_buf,3);
-        send_CAN_msg(&can_msg_current, can_msg_current_buf, 2);
+        memcpy(can_msg_current_buf,can_buf,5);
+        send_CAN_msg(&can_msg_current, can_msg_current_buf, 5);
         while(is_CAN_msg_send(&can_msg_current) != TRUE);      // test si le message est envoyé
 
-
-        clear_buf(can_buf,8);
-        chinookpack_pack_float(&pk,fujin.chinook.power.v);
-        memcpy(can_msg_voltage_buf,can_buf,3);
-        send_CAN_msg(&can_msg_voltage, can_msg_voltage_buf, 2);
+        //chinookpack_pack_float(&pk,fujin.chinook.power.v);
+        chinookpack_pack_float(&pk,12.23);
+        //memcpy(can_msg_voltage_buf,can_buf,5);
+        send_CAN_msg(&can_msg_voltage, can_buf, 5);
         while(is_CAN_msg_send(&can_msg_voltage) != TRUE);      // test si le message est envoyé
+        chinookpack_fbuffer_clear(&fbuf);
 
-
+                    /*chinookpack_pack_float(&pk,sSensorValues.fTurbineRPM);
+                    Set_Timeout();
+                    send_CAN_msg(&sCanMsgTurbineRPM,ubTxCanBuffer, sizeof(ubTxCanBuffer));
+                    while(!is_CAN_msg_send(&sCanMsgTurbineRPM) && !sSystemFlags.CanTimeout);
+                    Reset_Timeout();
+                    chinookpack_fbuffer_clear(&buf);*/
         // 2. Read Clock for timestamps
         #if ENABLE_RTC == TRUE
         // At some interval read rtc and send time on can

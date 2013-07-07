@@ -8,13 +8,14 @@
 * MODIFIï¿½:	BAJA ETS (11 oct. 2011)
 ************************************************************************
 ****************************** INCLUDE *********************************/
+#define DSPIC33F
+#ifdef DSPIC33F
 #include "can.h"
-#include <p33EP512MC806.h>
-#include "../dma/dma.h"
+#include "../../../can_chinook3.h"
+#include "p33EP512MC806.h"
+#include <stdlib.h>
+#include "dma.h"
 
-#ifndef NULL
-#define NULL 0
-#endif
 
 /* Fonction privï¿½e. */
 //static void init_DMA_channel(unsigned int DMA_channel, char direction, unsigned int IRQ, unsigned int PAD, unsigned int offset);
@@ -23,11 +24,11 @@ static unsigned int set_SID_reg(unsigned long ID, T_TYPE_ID type_ID, char mask_o
 
 static unsigned int set_EID_reg(unsigned long ID, T_TYPE_ID type_ID);
 
-/***************** Dï¿½CLARATION DES VARIABLES GLOBALES ******************/
-/* Buffer utilisï¿½ dans la DMA. */
+/***************** DÉCLARATION DES VARIABLES GLOBALES ******************/
+/* Buffer utilisé dans la DMA. */
 
-unsigned int CAN_msg_Buf[32][8] __attribute__((aligned(32 * 16)));
-
+__eds__ unsigned int CAN_msg_Buf[32][8] __attribute__((space(dma),eds,aligned(32*16)));
+//volatile unsigned int CAN_msg_Buf[32][8] __attribute__((aligned(32*16)));
 T_CAN_CONFIG config_CAN;
 
 /* Les tableaux suivant contiennent les adresses des diffï¿½rent registres. */
@@ -58,6 +59,7 @@ unsigned char buttons[2];
 volatile int counter_total;
 volatile int counter_rx;
 volatile int counter_tx;
+
 /******************************* INIT_CAN *******************************
 * Description : Fonction qui initialise le module CAN. Tous les aspect
 * 	temporelle du module (frï¿½quence, synchronisation) sont ajustï¿½ aux 
@@ -148,14 +150,18 @@ void init_CAN(T_CAN_MODE mode, unsigned int nbr_buf_Tx, unsigned int DMA_Rx, uns
 	}
 	
 	/* Configuration des canaux DMA. */
-	init_DMA_channel(DMA_Tx, 1, 0x0046, 0x0442, __builtin_dmaoffset(CAN_msg_Buf));
-	init_DMA_channel(DMA_Rx, 0, 0x0022, 0x0440, __builtin_dmaoffset(CAN_msg_Buf));
+	init_DMA_channel(DMA_Tx, 1, 0x0046, 0x0442,__builtin_dmaoffset(CAN_msg_Buf));
+	init_DMA_channel(DMA_Rx, 0, 0x0022, 0x0440,__builtin_dmaoffset(CAN_msg_Buf));
 	
 	/* Configuration de l'interuption. */	
 	/* Commence par faire un clear des interuption. */
 	IFS2bits.C1IF = 0;
 	C1INTFbits.TBIF = 0;
-	C1INTFbits.RBIF = 0;	
+	C1INTFbits.RBIF = 0;
+        C1INTFbits.ERRIF = 0;
+        C1INTFbits.FIFOIF = 0;
+        C1INTFbits.RBOVIF = 0;
+        C1INTFbits.IVRIF = 0;
 	
 	/* Configure le niveau de priotitï¿½. */
 	IPC8bits.C1IP = int_level & 0x0007;
@@ -163,7 +169,11 @@ void init_CAN(T_CAN_MODE mode, unsigned int nbr_buf_Tx, unsigned int DMA_Rx, uns
 	/* Active les interruption en transmission et en interruption. */
 	IEC2bits.C1IE=1;
 	C1INTEbits.RBIE=1;
-	C1INTEbits.TBIE=1;		
+	C1INTEbits.TBIE=1;
+        C1INTEbits.ERRIE=1;
+        C1INTEbits.FIFOIE=1;
+        C1INTEbits.IVRIE=1;
+        C1INTEbits.RBOVIE=1;
 	
 	/* Met le module dans le mode demandï¿½. */ 
 	/* Attend que le changement soit effectifs. */
@@ -299,7 +309,6 @@ int send_CAN_msg(T_CAN_Tx_MSG * CAN_tx_msg, const void * data_scr, char nbr_data
 	
 	/* Dï¿½bloque les interupt. */
 	RESTORE_CPU_IPL(old_ipl);
-
 	return TRUE;		
 }
 
@@ -427,7 +436,7 @@ void config_CAN_mask(unsigned int mask_number, unsigned long mask, T_TYPE_ID typ
 *	int				TRUE si la rï¿½ception ï¿½ pu ï¿½tre configurï¿½ sinon, FALSE.
 *
 ************************************************************************/
-void receive_CAN_msg(unsigned int filter_number, unsigned int mask_number, void (* ptr_fct_receive) (unsigned long ID, T_TYPE_ID type_ID, const void * data_rx, char nbr_data))
+void receive_CAN_msg(unsigned int filter_number, unsigned int mask_number, void (* ptr_fct_receive) (unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* data_rx, char nbr_data))
 {
 	int old_ipl;
 
@@ -582,38 +591,47 @@ static unsigned int set_EID_reg(unsigned long ID, T_TYPE_ID type_ID)
 ************************************************************************/
 void __attribute__((interrupt,no_auto_psv))_C1Interrupt(void)
 {
-    //Led3^=1;
+
+        _LATD11^=1;
 	char temp_win;
 	unsigned int ii=0, Buf_read_ptr=0, filter_hit=0;
 	unsigned long ID_rx=0;
 	T_TYPE_ID type_ID_rx;
+        unsigned int test[8]={0};
+        T_CAN_DATA recopie;
 	
 	temp_win = C1CTRL1bits.WIN;
 	C1CTRL1bits.WIN = 0;
 
 	//counter_total++;
-
+        /*Rx Buffer interrupt flag*/
 	if(C1INTFbits.RBIF == 1)
 	{
-#ifdef DEBUG_CAN 
-       uart1PutChar('.');	
-#endif
 		/* C'est un buffer configurï¿½ en Rx qui a gï¿½nï¿½rï¿½ l'interrupt. */
 		while( (C1RXFUL1 != 0) || (C1RXFUL2 != 0) )
 		{
 			Buf_read_ptr = C1FIFO & 0x003F;
-		
+                        test[0] = *(CAN_msg_Buf[Buf_read_ptr]);// & 0x0001;
+                        recopie.data0=*(CAN_msg_Buf[Buf_read_ptr]);
+                        recopie.data1=*(CAN_msg_Buf[Buf_read_ptr]+1*sizeof(char));
+                        recopie.data2=*(CAN_msg_Buf[Buf_read_ptr]+2*sizeof(char));
+                        recopie.data3=*(CAN_msg_Buf[Buf_read_ptr]+3*sizeof(char));
+                        recopie.data4=*(CAN_msg_Buf[Buf_read_ptr]+4*sizeof(char));
+                        recopie.data5=*(CAN_msg_Buf[Buf_read_ptr]+5*sizeof(char));
+                        recopie.data6=*(CAN_msg_Buf[Buf_read_ptr]+6*sizeof(char));
+                        recopie.data7=*(CAN_msg_Buf[Buf_read_ptr]+7*sizeof(char));
+
 			/* Dï¿½termine l'ID du message reï¿½u selon le type. */
-			if( (CAN_msg_Buf[Buf_read_ptr][0] & 0x0001) == 1)
+			if((recopie.data0 & 0x0001) == 1)
 			{
 				/* Extended ID */
-				ID_rx = ((unsigned long)(CAN_msg_Buf[Buf_read_ptr][1] & 0x0FFF) << 17) | ((unsigned long)(CAN_msg_Buf[Buf_read_ptr][2] & 0xFC00) << 1) | ((unsigned long)(CAN_msg_Buf[Buf_read_ptr][0] & 0x1FFC) >> 2);
+				ID_rx = ((unsigned long)(*(CAN_msg_Buf[Buf_read_ptr]+1) & 0x0FFF) << 17) | ((unsigned long)(CAN_msg_Buf[Buf_read_ptr][2] & 0xFC00) << 1) | ((unsigned long)(CAN_msg_Buf[Buf_read_ptr][0] & 0x1FFC) >> 2);
 				type_ID_rx = EXTENDED_ID;
 			}
 			else
 			{
 				/* Standard ID */
-				ID_rx = (unsigned long)((CAN_msg_Buf[Buf_read_ptr][0] & 0x1FFC) >> 2);
+				ID_rx = (unsigned long)((recopie.data0 & 0x1FFC) >> 2);
 				type_ID_rx = STANDARD_ID;						
 			}		 
 			
@@ -628,10 +646,10 @@ void __attribute__((interrupt,no_auto_psv))_C1Interrupt(void)
 			}
 
 			/* Exï¿½cute la fonction associï¿½ ï¿½ ce message. */
-			filter_hit = (CAN_msg_Buf[Buf_read_ptr][7] & 0x1F00) >> 8;
+			filter_hit = (recopie.data7 >> 8) & 0x001F;
 			if(config_CAN.ptr_fct_receive[filter_hit] != NULL)
 			{
-				config_CAN.ptr_fct_receive[filter_hit](ID_rx, type_ID_rx, &CAN_msg_Buf[Buf_read_ptr][3], (char)(CAN_msg_Buf[Buf_read_ptr][2] & 0x000F));
+				config_CAN.ptr_fct_receive[filter_hit](ID_rx, type_ID_rx,&recopie, (int)(recopie.data2 & 0x000F));//(CAN_msg_Buf[Buf_read_ptr]+3), (int)(recopie.data2 & 0x000F));
 				
 			}
 
@@ -639,7 +657,7 @@ void __attribute__((interrupt,no_auto_psv))_C1Interrupt(void)
 		
 		C1INTFbits.RBIF = 0;
 	}	
-	
+	/*Tx Buffer interrupt flag*/
 	if(C1INTFbits.TBIF == 1)
 	{
 		counter_tx++;
@@ -658,27 +676,42 @@ void __attribute__((interrupt,no_auto_psv))_C1Interrupt(void)
 		}	
 	}
 	
+	C1CTRL1bits.WIN = temp_win;
+
+        /*Error interrupt flag*/
+        if(C1INTFbits.ERRIF == 1)
+        {
+            C1INTFbits.ERRIF = 0;
+        }
+
+	/*Invalid message interrupt flag*/
+        if(C1INTFbits.IVRIF == 1)
+        {
+            C1INTFbits.IVRIF = 0;
+        }
+
+  	/*Rx buffer overflow interrupt flag*/
+        if(C1INTFbits.RBOVIF == 1)
+        {
+            C1INTFbits.RBOVIF = 0;
+        }
+
+        /*Fifo almost full interrupt flag*/
+        if(C1INTFbits.FIFOIF == 1)
+        {
+            C1INTFbits.FIFOIF = 0;
+        }
+
+        /*Transmit in bus passive flag*/
+        if(C1INTFbits.TXBP == 1)
+        {
+            C1INTFbits.TXBP = 0;
+        }
+
 	C1CTRL1bits.WIN = temp_win;	
 
 	IFS2bits.C1IF = 0;
 
 	return;	
 }	
-
-void can_get_buttons(unsigned long ID, T_TYPE_ID type_ID, const void * data_rx, char nbr_data)
-{
-	
-	char* datReceive ;
-	int old_ipl;
-
-	// Block interruptions
-	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
-
- 	datReceive = (char *)data_rx;
-
-	buttons[1] = datReceive[1];
-	buttons[0] = datReceive[0];
-
-	// Restore interruptions
-	RESTORE_CPU_IPL(old_ipl);
-}
+#endif // DSPIC33F
