@@ -9,21 +9,44 @@ _FOSCSEL(FNOSC_FRCPLL); // select fast internal rc with pll
 _FOSC(FCKSM_CSECMD & OSCIOFNC_OFF & POSCMD_XT);
 _FWDT(FWDTEN_OFF); // Watchdog timer software enabled
 
-
-void fujin_recv_can_msg(unsigned long ID,
-                        T_TYPE_ID type_ID,
-                        const void * data_rx,
-                        char nbr_data);
-
-
 uint8_t print=0;
 
+int datReceive_can_cmd;
+char datReceive_can_shift;
+char datReceive_can_EEPROM_CONFIG_ANSWER;
+float datReceive_can_pitch_orientation = 0.0f;
+float datReceive_can_wind_speed = 0.0f;
+float datReceive_can_wind_direction = 0.0f;
+float datReceive_can_turbine_rpm_motor = 0.0f;
+float datReceive_can_wheel_rpm = 0.0f;
+float datReceive_can_turbine_direction = 0.0f;
+unsigned char datReceive_can_gear = 0;
+float datReceive_can_voltage_monitor = 0.0f;
+
+void setup_can_rx(void);
+void fct_can_cmd(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_shift(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_EEPROM_CONFIG_ANSWER(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_pitch_orientation(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_wind_speed(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_wind_direction(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, int nbr_data);
+void fct_can_turbine_rpm_motor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_wheel_rpm(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_turbine_direction(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_gear(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_voltage_monitor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 
 T_CAN_Tx_MSG can_msg_clock;
 T_CAN_Tx_MSG can_msg_current;
 T_CAN_Tx_MSG can_msg_voltage;
 T_CAN_Tx_MSG can_msg_pitch;
 T_CAN_Tx_MSG can_msg_gear;
+
+char bTxCanBuffer[8];
+chinookpack_fbuffer buf;
+chinookpack_packer pk;
+chinookpack_unpacked unpacker; //Will contain the unpacked data
+unsigned int off = 0; //offset to read more than 1 msg in 1 packet
 
 uint8_t can_msg_current_buf[5];
 uint8_t can_msg_voltage_buf[5];
@@ -60,11 +83,6 @@ int main(void) {
     config_CAN_Tx_msg(&can_msg_gear,    CAN_MSG_GEAR_FUJIN_SID , STANDARD_ID, 3);
     #endif
     
-    // Initialize everything
-    clear_buf(can_buf,8);
-    chinookpack_fbuffer_init(&fbuf,can_buf,8);
-    chinookpack_packer_init(&pk,&fbuf,chinookpack_fbuffer_write);
-
     // Read Clock for timestamps
     #if ENABLE_RTC == TRUE
     // init the rtc
@@ -143,16 +161,223 @@ void __attribute__((interrupt, auto_psv)) _T5Interrupt(void)
 
     _T5IF=0;
 }
-void fujin_recv_can_msg(unsigned long ID,
-                        T_TYPE_ID type_ID,
-                        const void * data_rx,
-                        char nbr_data){
-  char* datReceive ;
-  int old_ipl;
-  // Block interruptions
-  SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+void setup_can_rx(void)
+{
 
-  datReceive = (char *)data_rx;
+	/*configuration du message pour le boutton */
+	config_CAN_filter(0, CAN_MSG_BUTTON_CMD_SID , STANDARD_ID);
+	receive_CAN_msg(0, 3, fct_can_cmd);
+	//config_CAN_mask(0, 2.0f, STANDARD_ID);
 
-  RESTORE_CPU_IPL(old_ipl);
+	/*configuration du message pour le shift */
+	config_CAN_filter(1, CAN_MSG_SHIFT_SID , STANDARD_ID);
+	receive_CAN_msg(1, 3, fct_can_shift);
+	//config_CAN_mask(0, 2.0f, STANDARD_ID);
+
+        /*configuration du message de la requête des dernières valeurs d'automatisation */
+	config_CAN_filter(2, CAN_MSG_EEPROM_CONFIG_ANSWER_SID, STANDARD_ID);
+	receive_CAN_msg(2, 3, fct_can_EEPROM_CONFIG_ANSWER);
+	//config_CAN_mask(0, 2.0f, STANDARD_ID);
+
+        	/*configuration du message pour les commandes */
+	config_CAN_filter(3, CAN_MSG_BUTTON_CMD_SID , STANDARD_ID);
+	receive_CAN_msg(3, 3, fct_can_cmd);
+	//config_CAN_mask(0, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour l'orientation du pitch */
+	config_CAN_filter(4, CAN_MSG_MANUAL_PITCH_SID , STANDARD_ID);
+	receive_CAN_msg(4, 3, fct_can_pitch_orientation);
+	//config_CAN_mask(1, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour la vitesse du vent */
+	config_CAN_filter(5, CAN_MSG_WIND_SPEED_SID , STANDARD_ID);
+	receive_CAN_msg(5, 3, fct_can_wind_speed);
+	//config_CAN_mask(2, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour la direction du vent */
+	config_CAN_filter(6, CAN_MSG_WIND_DIRECTION_SID , STANDARD_ID);
+	receive_CAN_msg(6, 3, fct_can_wind_direction);
+	//config_CAN_mask(3, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour le RPM Moteur */
+	config_CAN_filter(7, CAN_MSG_TURBINE_RPM_MOTOR_SID , STANDARD_ID);
+	receive_CAN_msg(7, 3, fct_can_turbine_rpm_motor);
+	//config_CAN_mask(5, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour le RPM Roues */
+	config_CAN_filter(8, CAN_MSG_WHEEL_RPM_SID , STANDARD_ID);
+	receive_CAN_msg(8, 3, fct_can_wheel_rpm);
+	//config_CAN_mask(6, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour la direction de l'eolienne */
+	config_CAN_filter(9, CAN_MSG_TURBINE_DIRECTION_SID , STANDARD_ID);
+	receive_CAN_msg(9, 3, fct_can_turbine_direction);
+	//config_CAN_mask(7, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour le gear */
+	config_CAN_filter(10, CAN_MSG_GEAR_SID , STANDARD_ID);
+	receive_CAN_msg(10, 3, fct_can_gear);
+	//config_CAN_mask(8, 2.0f, STANDARD_ID);
+
+	/*configuration du message pour le voltage */
+	config_CAN_filter(11, CAN_MSG_VOLTAGE_MONITOR_SID , STANDARD_ID);
+	receive_CAN_msg(11, 3, fct_can_voltage_monitor);
+	//config_CAN_mask(9, 2.0f, STANDARD_ID);
+
 }
+void fct_can_cmd(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+
+	RESTORE_CPU_IPL(old_ipl);
+
+        datReceive_can_cmd = (int)unpacker.data.via.i64;
+}
+void fct_can_shift(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+
+	RESTORE_CPU_IPL(old_ipl);
+
+        datReceive_can_shift = (char)unpacker.data.via.u64;
+}
+void fct_can_EEPROM_CONFIG_ANSWER(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+
+	RESTORE_CPU_IPL(old_ipl);
+
+        datReceive_can_EEPROM_CONFIG_ANSWER = (char)unpacker.data.via.u64;
+}
+void fct_can_pitch_orientation(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_pitch_orientation = unpacker.data.via.dec;
+}
+void fct_can_wind_speed(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_wind_speed = unpacker.data.via.dec;
+}
+//volatile void fct_can_wind_direction(unsigned long ID, T_TYPE_ID type_ID,T_CAN_DATA recopie, int nbr_data)
+void fct_can_wind_direction(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, int nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_wind_direction = unpacker.data.via.dec;
+
+}
+void fct_can_turbine_rpm_motor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_turbine_rpm_motor = unpacker.data.via.dec;
+}
+void fct_can_wheel_rpm(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_wheel_rpm = unpacker.data.via.dec;
+}
+void fct_can_turbine_direction(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_turbine_direction = unpacker.data.via.dec;
+}
+void fct_can_gear(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[2] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_gear = (unsigned char)unpacker.data.via.u64;
+}
+void fct_can_voltage_monitor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
+
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        datReceive_can_voltage_monitor =(unsigned char)unpacker.data.via.dec;
+
+}
+/************************************************************/
