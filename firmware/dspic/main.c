@@ -10,6 +10,7 @@ _FOSC(FCKSM_CSECMD & OSCIOFNC_OFF & POSCMD_XT);
 _FWDT(FWDTEN_OFF); // Watchdog timer software enabled
 
 uint8_t print=0;
+unsigned char CanTimeout = 0;
 
 int datReceive_can_cmd;
 char datReceive_can_shift;
@@ -34,7 +35,6 @@ void fct_can_turbine_rpm_motor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* 
 void fct_can_wheel_rpm(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 void fct_can_turbine_direction(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 void fct_can_gear(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
-void fct_can_voltage_monitor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 
 T_CAN_Tx_MSG can_msg_clock;
 T_CAN_Tx_MSG can_msg_current;
@@ -112,13 +112,17 @@ int main(void) {
             // 3. CAN Processing
             #if ENABLE_CAN == TRUE
             chinookpack_pack_float(&pk,fujin.chinook.power.i);
+            Set_Timeout();
             send_CAN_msg(&can_msg_current, can_buf, 5);
-            while(is_CAN_msg_send(&can_msg_current) != TRUE);      // test si le message est envoyé
+            while(is_CAN_msg_send(&can_msg_current) != TRUE && !CanTimeout);      // test si le message est envoyé
+            Reset_Timeout();
             chinookpack_fbuffer_clear(&fbuf);
 
             chinookpack_pack_float(&pk,fujin.chinook.power.v);
+            Set_Timeout();
             send_CAN_msg(&can_msg_voltage, can_buf, 5);
-            while(is_CAN_msg_send(&can_msg_voltage) != TRUE);      // test si le message est envoyé
+            while(is_CAN_msg_send(&can_msg_voltage) != TRUE && !CanTimeout);      // test si le message est envoyé
+            Reset_Timeout();
             chinookpack_fbuffer_clear(&fbuf);
 
             print = 0;
@@ -161,6 +165,12 @@ void __attribute__((interrupt, auto_psv)) _T5Interrupt(void)
 
     _T5IF=0;
 }
+void __attribute__((interrupt, auto_psv)) _T3Interrupt(void)
+{
+    CanTimeout = 1;
+    _T3IF=0;
+}
+
 void setup_can_rx(void)
 {
 
@@ -218,11 +228,6 @@ void setup_can_rx(void)
 	config_CAN_filter(10, CAN_MSG_GEAR_SID , STANDARD_ID);
 	receive_CAN_msg(10, 3, fct_can_gear);
 	//config_CAN_mask(8, 2.0f, STANDARD_ID);
-
-	/*configuration du message pour le voltage */
-	config_CAN_filter(11, CAN_MSG_VOLTAGE_MONITOR_SID , STANDARD_ID);
-	receive_CAN_msg(11, 3, fct_can_voltage_monitor);
-	//config_CAN_mask(9, 2.0f, STANDARD_ID);
 
 }
 void fct_can_cmd(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
@@ -366,18 +371,5 @@ void fct_can_gear(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char
 	RESTORE_CPU_IPL(old_ipl);
         datReceive_can_gear = (unsigned char)unpacker.data.via.u64;
 }
-void fct_can_voltage_monitor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
-{
-        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
-	int old_ipl;
 
-	// Block interruptions
-	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
-	off = 0;
-	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
-	off = 0;
-	RESTORE_CPU_IPL(old_ipl);
-        datReceive_can_voltage_monitor =(unsigned char)unpacker.data.via.dec;
-
-}
 /************************************************************/

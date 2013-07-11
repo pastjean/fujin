@@ -1,14 +1,19 @@
-#ifndef __TIMER_H__
-#define __TIMER_H__
+/*
+Propriété du 
+Club Chinook/ETS
+*/
+/******************************************************************
+					M_TMR.c
+******************************************************************/
 
-	void timer1_init(void);
-	void timer2_init(float freq);
-	void timer3_init(float freq);
-	void timer5_init(float freq);
-	void timer6_init(void);
-	void timer7_init(void);
-	void timer8_init(void);
-	void timer9_init(void);
-	void timer_reset_timeout(void);
-        
-#endif // __TIMER_H__
+	void Init_Timer1(void);
+	void Init_Timer2(float freq);
+	void Init_Timer3(float freq);
+        void Init_Timer4(float freq);
+	void Init_Timer5(float freq);
+	void Init_Timer6(void);
+	void Init_Timer7(void);
+	void Init_Timer8(void);
+	void Init_Timer9(void);
+	void Reset_Timeout(void);
+        void Set_Timeout(void);
