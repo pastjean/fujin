@@ -27,6 +27,17 @@ typedef struct{
     eol_s eol;
 } chinook_s;
 
+typedef struct{
+    float fTurbineRPM;
+    float fTurbineDir;
+    float fWheelRPM;
+    float fTrust;
+    float fPitch;
+    float fWindDir;
+    float fWindSpeed;
+    uint8_t ubGear;
+} logging_s;
+
 
 #endif	/* CHINOOK_H */
 

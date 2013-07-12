@@ -43,6 +43,9 @@ typedef struct{
 
     ltc4151_s ltc4151_state;
 
+    //For dataloggin
+    logging_s loggin;
+
     // Variable Chinook present STATE
     chinook_s chinook;
     Skadi skadi;

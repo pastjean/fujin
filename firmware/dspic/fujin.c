@@ -90,7 +90,6 @@ void fujin_init_uart(){
 	UartInitPortStruc(UART_2, NULL,NULL);
 	UartInterruptTxEnable(UART_2, CHAR_N_BUFFER_EMPTY,2,ENABLE);
 	UartInterruptRxEnable(UART_2, CHAR_RECEIVE,3,ENABLE);
-	UartTxFrame(UART_2, "Notus Started \n\r", 16);
         fujin.has_usbserial=true;
     #else
         fujin.has_usbserial=false;
@@ -101,7 +100,6 @@ void fujin_init_uart(){
 	UartInitPortStruc(UART_1, NULL,NULL);
 	UartInterruptTxEnable(UART_1, CHAR_N_BUFFER_EMPTY,2,ENABLE);
 	UartInterruptRxEnable(UART_1, CHAR_RECEIVE,3,ENABLE);
-	UartTxFrame(UART_1, "Notus Started \n\r", 16);
         fujin.has_xbee=true;
     #else
         fujin.has_xbee=false;
