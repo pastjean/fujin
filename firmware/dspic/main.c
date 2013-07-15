@@ -40,18 +40,11 @@ unsigned int off = 0; //offset to read more than 1 msg in 1 packet
 uint8_t can_msg_current_buf[5];
 uint8_t can_msg_voltage_buf[5];
 
-char can_buf[8];
-chinookpack_fbuffer fbuf;
-chinookpack_packer pk;
-
-void tst(Skadi* skadi, SkadiArgs args){LATBbits.LATB13 ^=1;}
-
-SkadiCommand skadiCommandTable[] = {
-  {"test", tst, 0, "test test test test test"}
-};
-
 uint8_t uartline_rcv_new;
 char uartline_rcv[256];
+
+/*Data logging buffer*/
+uint8_t ubDataLoggingBuffer[256] = {0};
 
 void uartReceiveLineEvt(const char* line,size_t s){
     uartline_rcv_new=1;
@@ -65,11 +58,17 @@ int main(void) {
 
     // CAN PREPARATION
     #if ENABLE_CAN == TRUE
+    chinookpack_fbuffer_init(&buf,bTxCanBuffer,8);
+    chinookpack_packer_init(&pk,&buf,chinookpack_fbuffer_write);
+    chinookpack_unpacked_init(&unpacker);
+    
     config_CAN_Tx_msg(&can_msg_current, CAN_MSG_CURRENT_MONITOR_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_voltage, CAN_MSG_VOLTAGE_MONITOR_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_clock,   CAN_MSG_TIME_SID , STANDARD_ID, 3);
     //config_CAN_Tx_msg(&can_msg_pitch,   CAN_MSG_PITCH_AUTO_SID , STANDARD_ID, 3);
     config_CAN_Tx_msg(&can_msg_gear,    CAN_MSG_GEAR_FUJIN_SID , STANDARD_ID, 3);
+
+    setup_can_rx();
     #endif
     
     // Read Clock for timestamps
@@ -81,9 +80,6 @@ int main(void) {
     //       and and set settings
     UartSetRXLineEvt(UART_1,uartReceiveLineEvt);
     UartSetRXLineEvt(UART_2,uartReceiveLineEvt);
-    skadi_init(&fujin.skadi, skadiCommandTable,sizeof(skadiCommandTable)/sizeof(SkadiCommand));
-
-    skadi_process_command(&fujin.skadi,"test");
     while(1){
         // 1. Read Current and SHUT DOWN RELAY if overloading
         #if ENABLE_VMON == TRUE && ENABLE_I2C == TRUE
@@ -109,7 +105,6 @@ int main(void) {
         // 4.1 XBEE Processing
         #if ENABLE_XBEE == TRUE
 
-        UartTxFrame(UART_1, "Notus Started \n\r", 16);
 
         #endif
         // 4.2 USB-Serial Processing
@@ -123,25 +118,34 @@ int main(void) {
         if(print)
         {
             #if ENABLE_XBEE == TRUE && ENABLE_UART == TRUE
-
-            UartTxFrame(UART_1, "Fujin Started \n\r", 16);
+            sprintf(ubDataLoggingBuffer,"\n\r%u\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f"
+                                                                ,fujin.loggin.ubGear
+                                                                ,fujin.loggin.fWindSpeed
+                                                                ,fujin.loggin.fWindDir
+                                                                ,fujin.loggin.fWheelRPM
+                                                                ,fujin.loggin.fTurbineRPM
+                                                                ,fujin.loggin.fTurbineDir
+                                                                ,fujin.loggin.fTrust
+                                                                ,fujin.loggin.fPitch);
+            UartTxFrame(UART_1, ubDataLoggingBuffer, 40);
+            
             #endif
 
             // 3. CAN Processing
             #if ENABLE_CAN == TRUE
             chinookpack_pack_float(&pk,fujin.chinook.power.i);
             Set_Timeout();
-            send_CAN_msg(&can_msg_current, can_buf, 5);
+            send_CAN_msg(&can_msg_current, bTxCanBuffer, 5);
             while(!is_CAN_msg_send(&can_msg_current) && !CanTimeout);      // test si le message est envoyé
             Reset_Timeout();
-            chinookpack_fbuffer_clear(&fbuf);
+            chinookpack_fbuffer_clear(&buf);
 
             chinookpack_pack_float(&pk,fujin.chinook.power.v);
             Set_Timeout();
-            send_CAN_msg(&can_msg_voltage, can_buf, 5);
+            send_CAN_msg(&can_msg_voltage, bTxCanBuffer, 5);
             while(!is_CAN_msg_send(&can_msg_voltage) && !CanTimeout);      // test si le message est envoyé
             Reset_Timeout();
-            chinookpack_fbuffer_clear(&fbuf);
+            chinookpack_fbuffer_clear(&buf);
             #endif
 
             print = 0;
@@ -157,7 +161,6 @@ void __attribute__((interrupt, auto_psv)) _T5Interrupt(void)
 {
     /*Timer used for display at 10 Hz*/
     if(print==0) print = 1;
-
     _T5IF=0;
 }
 void __attribute__((interrupt, auto_psv)) _T3Interrupt(void)
@@ -168,49 +171,44 @@ void __attribute__((interrupt, auto_psv)) _T3Interrupt(void)
 
 void setup_can_rx(void)
 {
-	/*configuration du message pour le boutton */
+        /*configuration du message pour les commandes */
 	config_CAN_filter(0, CAN_MSG_BUTTON_CMD_SID , STANDARD_ID);
 	receive_CAN_msg(0, 3, fct_can_cmd);
 	//config_CAN_mask(0, 2.0f, STANDARD_ID);
 
-        /*configuration du message pour les commandes */
-	config_CAN_filter(3, CAN_MSG_BUTTON_CMD_SID , STANDARD_ID);
-	receive_CAN_msg(3, 3, fct_can_cmd);
-	//config_CAN_mask(0, 2.0f, STANDARD_ID);
-
 	/*configuration du message pour l'orientation du pitch */
-	config_CAN_filter(4, CAN_MSG_MANUAL_PITCH_SID , STANDARD_ID);
-	receive_CAN_msg(4, 3, fct_can_pitch_orientation);
+	config_CAN_filter(1, CAN_MSG_MANUAL_PITCH_SID , STANDARD_ID);
+	receive_CAN_msg(1, 3, fct_can_pitch_orientation);
 	//config_CAN_mask(1, 2.0f, STANDARD_ID);
 
 	/*configuration du message pour la vitesse du vent */
-	config_CAN_filter(5, CAN_MSG_WIND_SPEED_SID , STANDARD_ID);
-	receive_CAN_msg(5, 3, fct_can_wind_speed);
+	config_CAN_filter(2, CAN_MSG_WIND_SPEED_SID , STANDARD_ID);
+	receive_CAN_msg(2, 3, fct_can_wind_speed);
 	//config_CAN_mask(2, 2.0f, STANDARD_ID);
 
 	/*configuration du message pour la direction du vent */
-	config_CAN_filter(6, CAN_MSG_WIND_DIRECTION_SID , STANDARD_ID);
-	receive_CAN_msg(6, 3, fct_can_wind_direction);
+	config_CAN_filter(3, CAN_MSG_WIND_DIRECTION_SID , STANDARD_ID);
+	receive_CAN_msg(3, 3, fct_can_wind_direction);
 	//config_CAN_mask(3, 2.0f, STANDARD_ID);
 
 	/*configuration du message pour le RPM Moteur */
-	config_CAN_filter(7, CAN_MSG_TURBINE_RPM_MOTOR_SID , STANDARD_ID);
-	receive_CAN_msg(7, 3, fct_can_turbine_rpm_motor);
+	config_CAN_filter(4, CAN_MSG_TURBINE_RPM_MOTOR_SID , STANDARD_ID);
+	receive_CAN_msg(4, 3, fct_can_turbine_rpm_motor);
 	//config_CAN_mask(5, 2.0f, STANDARD_ID);
 
 	/*configuration du message pour le RPM Roues */
-	config_CAN_filter(8, CAN_MSG_WHEEL_RPM_SID , STANDARD_ID);
-	receive_CAN_msg(8, 3, fct_can_wheel_rpm);
+	config_CAN_filter(5, CAN_MSG_WHEEL_RPM_SID , STANDARD_ID);
+	receive_CAN_msg(5, 3, fct_can_wheel_rpm);
 	//config_CAN_mask(6, 2.0f, STANDARD_ID);
 
 	/*configuration du message pour la direction de l'eolienne */
-	config_CAN_filter(9, CAN_MSG_TURBINE_DIRECTION_SID , STANDARD_ID);
-	receive_CAN_msg(9, 3, fct_can_turbine_direction);
+	config_CAN_filter(6, CAN_MSG_TURBINE_DIRECTION_SID , STANDARD_ID);
+	receive_CAN_msg(6, 3, fct_can_turbine_direction);
 	//config_CAN_mask(7, 2.0f, STANDARD_ID);
 
 	/*configuration du message pour le gear */
-	config_CAN_filter(10, CAN_MSG_GEAR_SID , STANDARD_ID);
-	receive_CAN_msg(10, 3, fct_can_gear);
+	config_CAN_filter(7, CAN_MSG_GEAR_SID , STANDARD_ID);
+	receive_CAN_msg(7, 3, fct_can_gear);
 	//config_CAN_mask(8, 2.0f, STANDARD_ID);
 
 }

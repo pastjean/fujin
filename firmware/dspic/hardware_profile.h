@@ -24,8 +24,8 @@
 #define LED_PORT   PORTB
 #define LED_PWR    PORTBbits.RB11
 #define LED_LOWBAT PORTBbits.RB12
-#define LED_CANRX  PORTBbits.RB13
-#define LED_CANTX  PORTBbits.RB14
+#define LED_CANRX  LATBbits.LATB13
+#define LED_CANTX  LATBbits.LATB14
 #define LED_RELAY  PORTBbits.RB15
 #define SWITCH_RELAY  _LATB15
 

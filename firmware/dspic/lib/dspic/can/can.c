@@ -12,6 +12,7 @@
 #ifdef DSPIC33F
 #include "can.h"
 #include "../../../can_chinook3.h"
+#include "../../../hardware_profile.h"
 #include "p33EP512MC806.h"
 #include <stdlib.h>
 #include "dma.h"
@@ -591,8 +592,6 @@ static unsigned int set_EID_reg(unsigned long ID, T_TYPE_ID type_ID)
 ************************************************************************/
 void __attribute__((interrupt,no_auto_psv))_C1Interrupt(void)
 {
-
-        _LATD11^=1;
 	char temp_win;
 	unsigned int ii=0, Buf_read_ptr=0, filter_hit=0;
 	unsigned long ID_rx=0;
@@ -607,6 +606,7 @@ void __attribute__((interrupt,no_auto_psv))_C1Interrupt(void)
         /*Rx Buffer interrupt flag*/
 	if(C1INTFbits.RBIF == 1)
 	{
+                LED_CANRX ^= 1;
 		/* C'est un buffer configur� en Rx qui a g�n�r� l'interrupt. */
 		while( (C1RXFUL1 != 0) || (C1RXFUL2 != 0) )
 		{
@@ -661,7 +661,7 @@ void __attribute__((interrupt,no_auto_psv))_C1Interrupt(void)
 	if(C1INTFbits.TBIF == 1)
 	{
 		counter_tx++;
-
+                //LED_CANTX ^= 1;
 		C1INTFbits.TBIF = 0;
 		/* C'est un buffer configur� en Tx qui a g�n�r� l'interrupt. */
 		/* V�rifie quel buffer en Tx s'est lib�r�. */

@@ -6,7 +6,8 @@ Fujin_s fujin;
 void fujin_init_board(){
     fujin_set_clk();
     fujin_init_io();
-    PORTB =0x7800;
+    LED_PWR = 1;
+    //PORTB = 0x7800;
 
     fujin_init_i2c();
     fujin_init_uart();
@@ -33,8 +34,13 @@ void fujin_set_clk()
 
 void fujin_init_io(){
 
+    /*Disable analog inputs*/
+    ANSELB = 0x0000;
+    ANSELC = 0x0000;
+    ANSELD = 0x0000;
+    ANSELE = 0x0000;
     // LEDS
-    TRISB = 0;
+    TRISB = 0x0000;
     // UART 1 Pins // XBEE
     // _RP69R = 1; // RD5
     CONF_U1TX_PIN = OUTPUT;
@@ -151,7 +157,7 @@ void fujin_init_eeprom(){
 void fujin_init_can(){
 #if ENABLE_CAN == TRUE
     fujin.has_can=true;
-    init_CAN(CAN_NORMAL, 8, 2, 3, 7);
+    init_CAN(CAN_NORMAL, 8, 0, 1, 7);
 #else
     fujin.has_can=false;
 #endif
