@@ -119,11 +119,14 @@ int main(void) {
         if(print)
         {
             #if ENABLE_XBEE == TRUE && ENABLE_UART == TRUE
-            sprintf(ubDataLoggingBuffer,"\n\r%u\t%.2f\t%.2f\n\r"
+            sprintf(ubDataLoggingBuffer,"%u %.2f %.2f %.2f %.2f %.2f\n\r"
                                                                 ,fujin.loggin.ubGear
                                                                 ,fujin.loggin.fWindSpeed
-                                                                ,fujin.loggin.fTurbineRPM);
-            UartTxFrame(UART_1, ubDataLoggingBuffer, 17);
+                                                                ,fujin.loggin.fTurbineRPM
+                                                                ,fujin.loggin.fWheelRPM
+                                                                ,fujin.loggin.fTrust
+                                                                ,fujin.loggin.fPitch);
+            UartTxFrame(UART_1, ubDataLoggingBuffer, strlen(ubDataLoggingBuffer));
             
             #endif
 
