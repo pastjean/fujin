@@ -18,6 +18,7 @@ void setup_can_rx(void);
 void fct_can_cmd(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 void fct_can_shift(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 void fct_can_pitch_orientation(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
+void fct_can_trust(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 void fct_can_wind_speed(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
 void fct_can_wind_direction(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, int nbr_data);
 void fct_can_turbine_rpm_motor(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data);
@@ -245,6 +246,11 @@ void setup_can_rx(void)
 	config_CAN_filter(8, CAN_MSG_TURBINE_RPM_SENSOR_SID , STANDARD_ID);
 	receive_CAN_msg(8, 3, fct_can_turbine_rpm_sensor);
 	//config_CAN_mask(8, 2.0f, STANDARD_ID)
+
+        /*configuration du message pour le trust */
+	config_CAN_filter(9, CAN_MSG_TRUST_SID , STANDARD_ID);
+	receive_CAN_msg(9, 3, fct_can_trust);
+	//config_CAN_mask(8, 2.0f, STANDARD_ID)
 }
 void fct_can_cmd(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
 {
@@ -368,5 +374,17 @@ void fct_can_gear(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char
 	RESTORE_CPU_IPL(old_ipl);
         fujin.loggin.ubGear = (unsigned char)unpacker.data.via.u64;
 }
+void fct_can_trust(unsigned long ID, T_TYPE_ID type_ID, T_CAN_DATA* recopie, char nbr_data)
+{
+        const char ubReceiveData[5] = {(recopie->data3 & 0x00FF),(recopie->data3 & 0xFF00)>>8,(recopie->data4 & 0x00FF),(recopie->data4 & 0xFF00)>>8,(recopie->data5 & 0x00FF)};
+	int old_ipl;
 
+	// Block interruptions
+	SET_AND_SAVE_CPU_IPL(old_ipl, 7);
+	off = 0;
+	chinookpack_unpack_next(&unpacker,ubReceiveData,5,&off);
+	off = 0;
+	RESTORE_CPU_IPL(old_ipl);
+        fujin.loggin.fTrust = unpacker.data.via.dec;
+}
 /************************************************************/
