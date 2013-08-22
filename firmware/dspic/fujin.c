@@ -17,11 +17,13 @@ void fujin_init_board(){
     //fujin_init_eeprom();
     //fujin_init_rtc();
 
-    Init_Timer5(5.0f);/*Display timer and reset values*/
+    Init_Timer5(4.0f);/*Display timer and reset values*/
     Init_Timer3(10.0f);/*CAN timeout timer*/
     
     fujin.chinook.power.v = -1;
     fujin.chinook.power.i = -1;
+
+    
 }
 
 void fujin_set_clk()

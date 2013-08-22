@@ -213,8 +213,8 @@
         <property key="save-temps" value="false"/>
         <appendMe value="--std=c99"/>
       </C30Global>
-      <PICkit3PlatformTool>
-      </PICkit3PlatformTool>
+      <ICD3PlatformTool>
+      </ICD3PlatformTool>
     </conf>
   </confs>
 </configurationDescriptor>

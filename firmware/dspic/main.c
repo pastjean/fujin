@@ -40,12 +40,35 @@ unsigned int off = 0; //offset to read more than 1 msg in 1 packet
 
 uint8_t can_msg_current_buf[5];
 uint8_t can_msg_voltage_buf[5];
+uint8_t can_msg_pitch_buf[5];
+
 
 uint8_t uartline_rcv_new;
 char uartline_rcv[256];
 
+uint8_t xbeeline_rcv_new;
+char xbeeline_rcv[256];
+
 /*Data logging buffer*/
 uint8_t ubDataLoggingBuffer[256] = {0};
+
+void skadiChangePitch(Skadi* skadi, SkadiArgs args){
+    if(args.length==1){
+        // args.elements[0];
+        LATBbits.LATB13 ^=1;
+    }
+}
+
+
+SkadiCommand testCommandTable[] = {
+  {"pitch", skadiChangePitch, 2, "changer le pitch"}
+};
+
+void xbeeReceiveLineEvt(const char* line,size_t s){
+    xbeeline_rcv_new=1;
+    memcpy(xbeeline_rcv,line,s-1);
+    xbeeline_rcv[s-1]= '\0';
+}
 
 void uartReceiveLineEvt(const char* line,size_t s){
     uartline_rcv_new=1;
@@ -77,10 +100,15 @@ int main(void) {
     // init the rtc
     #endif
 
+
+
     // TODO: Read Eeprom Parameters
     //       and and set settings
+    // Skadi
+      skadi_init(&fujin.skadi, testCommandTable,sizeof(testCommandTable)/sizeof(SkadiCommand));
+
     UartSetRXLineEvt(UART_1,uartReceiveLineEvt);
-    UartSetRXLineEvt(UART_2,uartReceiveLineEvt);
+    UartSetRXLineEvt(UART_2,xbeeReceiveLineEvt);
     while(1){
         // 1. Read Current and SHUT DOWN RELAY if overloading
         #if ENABLE_VMON == TRUE && ENABLE_I2C == TRUE
@@ -100,13 +128,16 @@ int main(void) {
         #endif
 
 
-        // skadi_process_command(&fujin.skadi, "cmdline :)");
+        
         // 4. UART Processing
         #if ENABLE_UART == TRUE
         // 4.1 XBEE Processing
         #if ENABLE_XBEE == TRUE
-
-
+        if(xbeeline_rcv_new){
+            skadi_process_command(&fujin.skadi,xbeeline_rcv);
+            xbeeline_rcv_new=0;
+        }
+        
         #endif
         // 4.2 USB-Serial Processing
         #if ENABLE_USBSERIAL == TRUE
